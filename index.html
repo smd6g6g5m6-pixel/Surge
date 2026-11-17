@@ -1,1 +1,1266 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><!-- LPA | Copyright (c) 2026 LPA. All rights reserved. Not licensed for copying, redistribution or reuse without written permission from LPA. --><html><head><meta charset=utf8><meta name=author content=LPA><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Study Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: top bar + tabs, one working surface (library / reader / mind map), Buddy docked right on wide screens, full sheet on phones */
+:root{--bg:#F3F4F8;--surface:#fff;--surface2:#E9ECF3;--ink:#171F2E;--muted:#5A6479;--line:#D6DBE6;--accent:#3446D6;--accent-ink:#fff;--accent-soft:#E2E6FB;--hi:#FFE46B;--hi-ink:#4A3D00;--good:#16794C;--bad:#B42318;--grid:#D9DDE8;--nstroke:#8D99B8;
+--c1:#DCE4FF;--c2:#D3EFE2;--c3:#FFE8BF;--c4:#F9D8E0;--c5:#E5DAF6;--c6:#E7EAF0;
+--ui:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--disp:"Space Grotesk",Inter,system-ui,sans-serif;--read:Literata,Georgia,serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F131B;--surface:#171C27;--surface2:#212837;--ink:#E7EAF2;--muted:#9AA4B9;--line:#2B3446;--accent:#93A1FF;--accent-ink:#0F131B;--accent-soft:#252D52;--hi:#6B5A12;--hi-ink:#FFF0A8;--good:#5FD39B;--bad:#FF8A7D;--grid:#222A3A;--nstroke:#58648A;--c1:#2A3563;--c2:#1F4A3A;--c3:#5A4420;--c4:#5B2A38;--c5:#403060;--c6:#333B4A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F131B;--surface:#171C27;--surface2:#212837;--ink:#E7EAF2;--muted:#9AA4B9;--line:#2B3446;--accent:#93A1FF;--accent-ink:#0F131B;--accent-soft:#252D52;--hi:#6B5A12;--hi-ink:#FFF0A8;--good:#5FD39B;--bad:#FF8A7D;--grid:#222A3A;--nstroke:#58648A;--c1:#2A3563;--c2:#1F4A3A;--c3:#5A4420;--c4:#5B2A38;--c5:#403060;--c6:#333B4A;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--ui);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ic{flex:none}
+#app{height:100%;display:flex;flex-direction:column;min-height:0}
+#top{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 0 8px}
+.brand{display:flex;align-items:center;gap:8px;font:700 17px var(--disp);letter-spacing:-.01em;margin-right:auto}
+.brand i{width:20px;height:20px;border-radius:6px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink)}
+#tabs{display:flex;gap:2px;background:var(--surface2);padding:3px;border-radius:10px;order:3;width:100%}
+#tabs button{flex:1;border:0;background:none;padding:7px 10px;border-radius:8px;display:flex;gap:6px;align-items:center;justify-content:center;color:var(--muted);font-weight:500}
+#tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+@media(min-width:760px){#tabs{order:0;width:auto;min-width:340px}}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:9px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:default}
+#body{flex:1;min-height:0;display:flex;gap:12px;padding-bottom:10px}
+#main{flex:1;min-width:0;min-height:0;overflow:auto;border-radius:14px}
+h2,h3{font-family:var(--disp);margin:0;letter-spacing:-.01em}
+.muted{color:var(--muted)}
+/* library */
+.lib{display:flex;flex-direction:column;gap:22px;padding-bottom:20px}
+.drop{border:1.5px dashed var(--nstroke);border-radius:14px;padding:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface)}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop .t{flex:1;min-width:200px}
+.drop .t b{display:block;font:600 16px var(--disp)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .nm{font-weight:600;overflow-wrap:anywhere}
+.card .meta{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:12px;flex-wrap:wrap}
+.badge{background:var(--surface2);border-radius:6px;padding:1px 7px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge.ex{background:var(--hi);color:var(--hi-ink)}
+.card .row{display:flex;gap:6px;margin-top:auto}
+.sect{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+/* reader */
+.reader{display:flex;flex-direction:column;height:100%;min-height:0}
+.rbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-bottom:10px}
+.rbar input.ttl{flex:1;min-width:140px;border:1px solid transparent;background:none;font:700 18px var(--disp);padding:4px 6px;border-radius:8px}
+.rbar input.ttl:hover,.rbar input.ttl:focus{border-color:var(--line);background:var(--surface)}
+.pw{flex:1;min-height:0;overflow:auto}
+.paper{max-width:740px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px clamp(16px,5vw,44px);font:17px/1.75 var(--read);overflow-wrap:anywhere}
+.paper[contenteditable=true]{outline:2px solid var(--accent)}
+.paper h1,.paper h2,.paper h3{font-family:var(--disp);line-height:1.25;margin:1.3em 0 .4em}
+.paper h1{font-size:1.6em}.paper h2{font-size:1.3em}.paper h3{font-size:1.1em}
+.paper>:first-child{margin-top:0}
+.paper p{margin:.7em 0}
+.paper table{border-collapse:collapse;margin:1em 0;font:15px/1.5 var(--ui);display:block;overflow-x:auto;max-width:100%}
+.paper td,.paper th{border:1px solid var(--line);padding:6px 10px;text-align:left}
+.paper th{background:var(--surface2)}
+.paper blockquote{margin:1em 0;padding-left:14px;border-left:3px solid var(--nstroke);color:var(--muted)}
+.paper pre{background:var(--surface2);padding:12px;border-radius:8px;overflow-x:auto;font:13px/1.5 ui-monospace,Menlo,monospace}
+.paper .li{display:flex;gap:8px;margin:.25em 0;padding-left:calc(var(--d,0)*1.5em)}
+.paper .li .n{flex:none;min-width:1.4em;color:var(--muted)}
+.paper .margin{font:14px var(--ui);background:var(--surface2);border-radius:8px;padding:6px 10px;margin:.7em 0;color:var(--muted)}
+.paper .margin::before{content:"Margin note · ";font-weight:600}
+.paper .fig{font:14px var(--ui);border:1px dashed var(--nstroke);border-radius:8px;padding:8px 10px;margin:.8em 0;color:var(--muted)}
+.paper .math{font:15px ui-monospace,Menlo,monospace;text-align:center;margin:.8em 0}
+.paper img{max-width:100%;border-radius:8px}
+.pbreak{font:600 11px var(--ui);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-top:1px solid var(--line);margin:2em 0 1em;padding-top:6px;user-select:none}
+mark.unsure{background:var(--hi);color:var(--hi-ink);border-radius:3px;padding:0 2px}
+.empty{display:grid;place-items:center;text-align:center;padding:40px 16px;color:var(--muted);gap:10px}
+#selbar{position:fixed;z-index:35;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));max-width:calc(100% - 24px);display:flex;gap:2px;background:var(--ink);color:var(--bg);padding:5px;border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+#selbar button{padding:10px 14px!important}
+#selbar button{background:none;border:0;color:inherit;padding:6px 10px;border-radius:7px;font-weight:500;white-space:nowrap}
+#selbar button:hover{background:rgba(127,127,127,.3)}
+/* scan */
+.scan{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:20px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.th{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:6px}
+.th img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:6px}
+.th .row{display:flex;gap:4px;justify-content:space-between;align-items:center;font-size:12px}
+.opts{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center}
+.opts select,.opts input[type=text]{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.st-ok{color:var(--good)}.st-bad{color:var(--bad)}
+/* map */
+.mapview{display:flex;flex-direction:column;height:100%;min-height:0;gap:8px}
+.tools{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px}
+.tool{display:flex;flex-direction:column;align-items:center;gap:2px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 10px;font-size:11px;min-width:58px;color:var(--muted)}
+.tool.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.ctx{display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-height:34px;font-size:13px}
+.ctx .lbl{color:var(--muted)}
+.sep{width:1px;height:18px;background:var(--line)}
+.sw{width:24px;height:24px;border-radius:50%;border:2px solid var(--nstroke)}
+.sw.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 11px;font-size:13px}
+.chip.on{background:var(--accent-soft);border-color:var(--accent)}
+.chip.danger{color:var(--bad)}
+#mapwrap{position:relative;flex:1;min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);touch-action:none}
+#cv{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:4px}
+.zoom button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+#ed{position:absolute;z-index:5;border:2px solid var(--accent);border-radius:10px;background:var(--surface);color:var(--ink);text-align:center;resize:none;padding:8px;font:14px/20px var(--ui);outline:none}
+.node text{fill:var(--ink);font:500 14px var(--ui);pointer-events:none}
+.node .sh{stroke:var(--nstroke);stroke-width:1.5}
+.node.sel .sh{stroke:var(--accent);stroke-width:3}
+.node.pend .sh{stroke:var(--accent);stroke-dasharray:5 4;stroke-width:3}
+/* buddy */
+#buddy{position:fixed;inset:0;z-index:30;background:var(--surface);display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));min-height:0}
+@media(min-width:1000px){#buddy{position:static;width:390px;flex:none;border:1px solid var(--line);border-radius:14px;padding:0 14px}}
+.bh{display:flex;align-items:center;gap:8px;padding:12px 0 8px}
+.bh .bt{font:700 16px var(--disp);display:flex;gap:7px;align-items:center;margin-right:auto}
+.pill{font:500 12px var(--ui);background:var(--accent-soft);padding:2px 9px;border-radius:999px;color:var(--ink)}
+.ib{border:0;background:none;padding:6px;border-radius:8px;display:grid;place-items:center;color:var(--muted)}
+.ib:hover{background:var(--surface2);color:var(--ink)}
+#chat{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.msg{max-width:94%;padding:9px 12px;border-radius:12px;overflow-wrap:anywhere}
+.msg.u{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
+.msg.a{align-self:flex-start;background:var(--surface2);width:94%}
+.msg .sc{font-size:11px;opacity:.75;margin-bottom:2px}
+.msg p{margin:.4em 0}.msg p:first-child{margin-top:0}.msg p:last-child{margin-bottom:0}
+.msg ul,.msg ol{margin:.4em 0;padding-left:1.3em}
+.msg .tools2{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:13px;padding:10px;border:1px dashed var(--line);border-radius:10px}
+#ctxchip{display:flex;gap:6px;align-items:center;font-size:12px;background:var(--surface2);border-radius:9px;padding:5px 6px 5px 10px;margin-bottom:6px}
+#ctxchip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#quick{display:flex;gap:6px;flex-wrap:wrap;padding:6px 0}
+#bform{display:flex;gap:6px;align-items:flex-end;padding:4px 0 12px}
+#bin{flex:1;resize:none;max-height:120px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px}
+.bset{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:12px}
+.mode{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 10px;cursor:pointer}
+.mode:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.mode b{display:block}.mode span{color:var(--muted);font-size:13px}
+.bset textarea{width:100%;min-height:90px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;resize:vertical}
+.qopt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;margin:4px 0}
+.qopt.good{border-color:var(--good);background:var(--accent-soft)}.qopt.bad{border-color:var(--bad)}
+.fc{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;margin:6px 0;width:100%;text-align:left}
+#lb{position:fixed;inset:0;z-index:40;background:rgba(10,12,18,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}
+#lb img,#lb canvas{max-width:100%;max-height:78%;object-fit:contain;background:#fff;border-radius:6px}
+#lb .row{display:flex;gap:8px;align-items:center;color:#fff}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:10px;font-size:13px;max-width:90%}
+/* motion */
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes selin{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}
+@keyframes slidein{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes sheetup{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes dots{0%,80%,100%{opacity:.2}40%{opacity:1}}
+#main.enter>*{animation:rise .4s cubic-bezier(.2,.7,.2,1) both}
+#main.enter>.lib{animation:none}
+#main.enter .lib>*{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+#main.enter .lib>*:nth-child(2){animation-delay:.07s}
+#main.enter .lib>*:nth-child(3){animation-delay:.14s}
+#main.enter .lib>*:nth-child(4){animation-delay:.21s}
+#main.enter .grid .card{animation:rise .45s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*45ms + 90ms)}
+.card{transition:transform .18s,box-shadow .18s,border-color .18s}
+.card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(20,30,60,.12);border-color:var(--accent)}
+.btn,.chip,.tool,.ib,#selbar button{transition:background .15s,border-color .15s,transform .1s,color .15s}
+.btn:active,.chip:active,.tool:active,.ib:active,#selbar button:active{transform:scale(.95)}
+#tabs button{transition:background .2s,color .2s,box-shadow .2s}
+#selbar:not([hidden]){animation:selin .18s ease-out both}
+.msg.enter{animation:pop .25s ease-out both}
+.dots i{display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;margin-left:3px;animation:dots 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+#buddy:not([hidden]){animation:slidein .28s cubic-bezier(.2,.7,.2,1) both}
+@media(max-width:999px){#buddy:not([hidden]){animation:sheetup .28s cubic-bezier(.2,.7,.2,1) both}}
+/* reader extras */
+.paper{font-size:var(--rs,17px)}
+.prog{height:3px;background:var(--surface2);border-radius:3px;margin-bottom:8px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s}
+.fsz{display:inline-flex}.fsz .ib{font-weight:700;font-size:13px;padding:4px 8px}
+.hero{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}.hero h2{font-size:24px}
+.chip.primary2{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+/* layout menu */
+#laymenu{position:absolute;right:0;top:calc(100% + 8px);z-index:45;width:min(310px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:0 14px 40px rgba(0,0,0,.25);animation:pop .18s both;transform-origin:top right}
+.lopt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 10px;margin-bottom:6px}
+.lopt:last-child{margin-bottom:0}
+.lopt.on{border-color:var(--accent);background:var(--accent-soft)}
+.lopt svg{flex:none;color:var(--accent)}
+.lopt span{font-size:13px;color:var(--muted)}.lopt span b{display:block;color:var(--ink);font-size:14px}
+@media(max-width:520px){#layBtn .lt{display:none}}
+/* layout: sidebar */
+#rail{display:none}
+.ritem{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;padding:7px 9px;border-radius:9px;color:var(--ink);min-width:0}
+.ritem span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ritem:hover{background:var(--surface2)}.ritem.on{background:var(--accent-soft);font-weight:600}
+.rsec{font:600 11px var(--ui);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:12px 9px 4px}
+@media(min-width:900px){
+ #app[data-layout=sidebar] #rail{display:flex;flex-direction:column;width:236px;flex:none;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px;animation:slidein .3s both}
+ #app[data-layout=sidebar] #tabs{display:none}}
+@media(max-width:899px){
+ #app[data-layout=sidebar]{padding-bottom:calc(60px + env(safe-area-inset-bottom,0px))}
+ #app[data-layout=sidebar] #tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;width:auto;min-width:0;border-radius:0;background:var(--surface);border-top:1px solid var(--line);padding:6px max(12px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-right,0px));gap:6px}
+ #app[data-layout=sidebar] #tabs button{flex-direction:column;gap:2px;font-size:11px;padding:6px 4px}
+ #app[data-layout=sidebar]~#selbar{bottom:calc(76px + env(safe-area-inset-bottom,0px))}}
+/* layout: split study */
+#app[data-layout=split] #buddyBtn,#app[data-layout=split] [data-act=bclose]{display:none}
+#app[data-layout=split] #buddy{position:static;border:1px solid var(--line);border-radius:14px;padding:0 14px}
+@media(min-width:760px){#app[data-layout=split] #buddy{width:380px;flex:none}#app[data-layout=split]~#selbar{left:calc(50% - 190px)}}
+@media(max-width:759px){#app[data-layout=split] #body{flex-direction:column}#app[data-layout=split] #buddy{flex:0 0 42vh;width:auto;min-height:0}#app[data-layout=split]~#selbar{bottom:calc(42vh + 14px)}}
+/* v4: reader, learn, tablet */
+.seg{display:inline-flex;background:var(--surface2);padding:3px;border-radius:9px;gap:2px}
+.seg button{border:0;background:none;padding:5px 11px;border-radius:7px;color:var(--muted);font-weight:500}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.badge.due{background:var(--accent);color:var(--accent-ink)}
+.pw{container-type:inline-size}
+.paper.org{max-width:920px}
+.unit{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;margin:1.15em 0}
+.unit .topic{font:600 11.5px var(--ui);text-transform:uppercase;letter-spacing:.07em;color:var(--accent);user-select:none;-webkit-user-select:none}
+.unit.nl .topic{display:none}
+.unit .ub{max-width:68ch;min-width:0}
+.unit .ub>:first-child{margin-top:0}.unit .ub>:last-child{margin-bottom:0}
+.unit .ub>p{margin:.4em 0}
+.lead{font-weight:600}
+.term{background:linear-gradient(transparent 60%,var(--accent-soft) 60%);font-weight:600}
+@container (min-width:800px){.paper.org .unit:not(.nl){grid-template-columns:170px minmax(0,1fr);gap:24px}.paper.org .unit .topic{padding:.55em 14px 0 0;text-align:right;border-right:2px solid var(--accent-soft)}}
+.learn{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-bottom:30px}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.lcard h3{font-size:19px}.lcard p{margin:0}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.stp{font:600 12px var(--ui);padding:4px 11px;border-radius:999px;background:var(--surface2);color:var(--muted)}
+.stp.on{background:var(--accent);color:var(--accent-ink)}.stp.done{background:var(--accent-soft);color:var(--ink)}
+.pbar{height:6px;background:var(--surface2);border-radius:4px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--accent);transition:width .4s}
+.exbox{border-left:3px solid var(--nstroke);background:var(--surface2);padding:10px 12px;border-radius:8px}
+.lsteps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.learn textarea{width:100%;min-height:130px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font:16px/1.6 var(--read);resize:vertical}
+.learn details{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface)}
+.learn summary{cursor:pointer;font-weight:600}
+.learn .qopt{font:inherit}
+.res{display:grid;gap:12px}.res ul{margin:4px 0 0;padding-left:1.2em}
+.cov{height:10px;border-radius:6px;background:var(--bad);overflow:hidden}.cov i{display:block;height:100%;background:var(--good)}
+.sched{display:flex;gap:6px;flex-wrap:wrap}
+.sd{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;background:var(--surface);text-align:center;min-width:74px}
+.sd.done{background:var(--accent-soft);border-color:var(--accent)}.sd.now{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.src{font-size:13px;color:var(--muted)}.src b{color:var(--ink)}
+#mapEmpty{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;padding:16px}
+.mecard{pointer-events:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:340px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.12);animation:pop .3s both}
+.mecard h3{font-size:18px}.mecard p{margin:0}
+button{touch-action:manipulation}
+@media(pointer:coarse){.btn,.chip,.ib{min-height:40px}.tool{min-width:64px;padding:8px 12px}.seg button{padding:8px 14px}.ritem{padding:10px}.qopt{padding:11px 12px}.zoom button{width:42px;height:42px}}
+@media(min-width:700px) and (max-width:999px){#buddy:not([hidden]){inset:0 0 0 auto;width:min(440px,92vw);border-left:1px solid var(--line);box-shadow:-12px 0 40px rgba(0,0,0,.22);animation:slidein .28s cubic-bezier(.2,.7,.2,1) both}#app[data-layout=split] #buddy{inset:auto;box-shadow:none}}
+#tabs button{white-space:nowrap}
+@media(max-width:520px){#tabs button{font-size:13px;gap:4px;padding:7px 3px}}
+/* v5 */
+.u-none{background:var(--surface2)}.u-early{background:var(--c1)}.u-dev{background:var(--c3)}.u-solid{background:var(--c2)}.u-shaky{background:var(--c4)}
+.pill.u-none,.pill.u-early,.pill.u-dev,.pill.u-solid,.pill.u-shaky{color:var(--ink);font-weight:600}
+.ustrip{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;position:sticky;top:-28px;z-index:2;background:var(--surface);padding:8px 0 10px;margin-bottom:6px;border-bottom:1px solid var(--line);font:13px var(--ui);color:var(--muted)}
+.ubar{display:flex;gap:3px;flex:0 1 220px;min-width:90px}.ubar i{flex:1;height:8px;border-radius:4px;min-width:6px}.ubar.big{flex:none;width:100%}.ubar.big i{height:14px;border-radius:6px}
+.cbar{display:flex;align-items:center;gap:8px;margin:1.6em 0 .2em;font:13px var(--ui)}.cbar .pill{padding:2px 10px}
+.paper.cover .unit:not(.open) .ub{filter:blur(9px);user-select:none;-webkit-user-select:none;cursor:pointer}
+.paper.cover .unit{cursor:pointer}
+.nextup{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.prow,.arow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.prow .pt{flex:1;min-width:140px}.arow{justify-content:space-between}
+.node.root text{fill:var(--accent-ink);font-weight:700}.node.root .sh{fill:var(--accent);stroke:var(--accent)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div id="app">
+ <header id="top">
+  <div class="brand"><i><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h10M4 19h6"/></svg></i>Study Desk</div>
+  <nav id="tabs"></nav>
+  <button class="btn" id="themeBtn" data-act="theme" aria-label="Switch light or dark"></button>
+  <div style="position:relative"><button class="btn" id="layBtn" data-act="laymenu" aria-label="Choose layout"></button><div id="laymenu" hidden></div></div>
+  <button class="btn primary" id="buddyBtn" data-act="buddy"></button>
+ </header>
+ <div id="body">
+  <aside id="rail"></aside>
+  <main id="main"></main>
+  <aside id="buddy" hidden></aside>
+ </div>
+</div>
+<div id="selbar" hidden></div>
+<div id="lb" hidden></div>
+<div id="toast" hidden></div>
+<input type="file" id="fileIn" multiple hidden>
+<input type="file" id="scanIn" accept="image/*" multiple hidden>
+<input type="file" id="camIn" accept="image/*" capture="environment" hidden>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script>
+(()=>{
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);
+const main=$('#main');
+const S={view:'library',docs:[],maps:[],docId:null,mapId:null,sel:null,chat:[],busy:false,abort:null,bopen:false,bset:false,settings:{mode:'text',custom:''},confirm:null};
+const P={
+doc:'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6',
+map:'M12 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 9v3m0 0-6 3m6-3 6 3',
+lib:'M4 5h6v14H4zM14 5h6v14h-6z',
+spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z',
+upload:'M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3',
+scan:'M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10',
+undo:'M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3',redo:'M15 14l5-5-5-5M20 9H10a6 6 0 0 0 0 12h3',
+pen:'M4 20l1-4L17 4a2 2 0 0 1 3 3L8 19zM14 7l3 3',bubble:'M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z',
+link:'M6 18 18 6M4 20h4v-4H4zM16 8h4V4h-4z',cursor:'M5 3l14 7-6 2-2 6z',text:'M5 6V4h14v2M12 4v16M9 20h6',
+eraser:'M20 20H9L4 15l9-9 7 7-6 7',plus:'M12 5v14M5 12h14',minus:'M5 12h14',fit:'M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4',
+send:'M4 12 20 4l-6 16-3-7z',x:'M6 6l12 12M18 6 6 18',
+gear:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2L14 3h-4l-.6 2.7a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2L10 21h4l.6-2.7a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z',
+dl:'M12 4v12m0 0-4-4m4 4 4-4M4 20h16',edit:'M4 20h4L19 9l-4-4L4 16z',img:'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4',
+up:'M12 19V5m0 0-5 5m5-5 5 5',down:'M12 5v14m0 0 5-5m-5 5-5-5',trash:'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',back:'M15 5l-7 7 7 7',grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',moon:'M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z',cap:'M2 9l10-5 10 5-10 5zM6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5'};
+const ic=(n,s=18)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${P[n]}"/></svg>`;
+let toastT;const toast=m=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)};
+/* ---------- storage ---------- */
+const mem={docs:new Map(),maps:new Map(),blobs:new Map()};let dbp=null;
+const openDB=()=>dbp||(dbp=new Promise(res=>{try{const r=indexedDB.open('study-desk',1);r.onupgradeneeded=()=>{for(const n of['docs','maps','blobs'])if(!r.result.objectStoreNames.contains(n))r.result.createObjectStore(n,{keyPath:'id'})};r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);r.onblocked=()=>res(null)}catch(e){res(null)}}));
+const tx=(n,m,fn)=>openDB().then(db=>new Promise((res,rej)=>{if(!db)return rej(new Error('nodb'));try{const t=db.transaction(n,m);const rq=fn(t.objectStore(n));t.oncomplete=()=>res(rq&&rq.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)}catch(e){rej(e)}}));
+const store={
+ async all(n){try{return await tx(n,'readonly',s=>s.getAll())}catch{return[...mem[n].values()]}},
+ async get(n,id){try{return await tx(n,'readonly',s=>s.get(id))}catch{return mem[n].get(id)}},
+ async put(n,o){mem[n].set(o.id,o);try{await tx(n,'readwrite',s=>s.put(o))}catch{}},
+ async del(n,id){mem[n].delete(id);try{await tx(n,'readwrite',s=>s.delete(id))}catch{}}};
+const loadSettings=()=>{try{Object.assign(S.settings,JSON.parse(localStorage.getItem('sd-settings')||'{}'))}catch{}};
+const saveSettings=()=>{try{localStorage.setItem('sd-settings',JSON.stringify(S.settings))}catch{}};
+const curDoc=()=>S.docs.find(d=>d.id===S.docId);
+const curMapObj=()=>S.maps.find(m=>m.id===S.mapId);
+const saveDoc=d=>store.put('docs',d);
+const fmtSize=b=>b>1e6?(b/1e6).toFixed(1)+' MB':Math.max(1,Math.round(b/1e3))+' KB';
+const fmtDate=t=>new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+async function dl(filename,data){try{const d=await window.claude.use('downloads');if(!d)throw 0;await d.save({filename,data})}catch(e){if(e&&e.code==='declined')return;toast('Saving files is not available in this view.')}}
+/* ---------- text helpers ---------- */
+const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\{\?(.*?)\?\}/g,'$1');
+function textToHtml(t){return String(t).split(/\n{2,}/).map(p=>p.trim()).filter(Boolean).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('')||'<p></p>'}
+function mdToHtml(t){const out=[];let list=[];const flush=()=>{if(list.length){out.push(list.join(''));list=[]}};
+ for(const raw of String(t).split('\n')){const l=raw.trimEnd();let m;
+  if(m=l.match(/^(#{1,3})\s+(.*)/)){flush();out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`)}
+  else if(m=l.match(/^\s*([-*]|\d+\.)\s+(.*)/)){const ol=/\d/.test(m[1]);list.push(`<div class="li"><span class="n">${ol?m[1]:'•'}</span><span>${inline(m[2])}</span></div>`)}
+  else if(!l.trim()){flush()}else{flush();out.push(`<p>${inline(l)}</p>`)}}
+ flush();return out.join('')}
+function csvToHtml(t){const rows=t.trim().split(/\r?\n/).slice(0,500).map(r=>{const c=[];let cur='',q=false;for(const ch of r){if(ch==='"')q=!q;else if(ch===','&&!q){c.push(cur);cur=''}else cur+=ch}c.push(cur);return c});
+ return'<table>'+rows.map((r,i)=>'<tr>'+r.map(c=>`<${i?'td':'th'}>${esc(c)}</${i?'td':'th'}>`).join('')+'</tr>').join('')+'</table>'}
+function listHtml(items,ordered){const cnt=[];return items.map(it=>{const d=Math.max(0,Math.min(5,it.depth|0));cnt.length=d+1;cnt[d]=(cnt[d]||0)+1;for(let i=0;i<d;i++)cnt[i]=cnt[i]||0;
+ return`<div class="li" style="--d:${d}"><span class="n">${ordered?cnt[d]+'.':(d%2?'–':'•')}</span><span>${inline(it.text)}</span></div>`}).join('')}
+function blocksToHtml(bl){return(bl||[]).map(b=>{switch(b.t){
+ case'h':return`<h${Math.min(3,Math.max(1,b.level|0||2))}>${inline(b.text)}</h${Math.min(3,Math.max(1,b.level|0||2))}>`;
+ case'ul':return listHtml(b.items||[],false);case'ol':return listHtml(b.items||[],true);
+ case'table':return'<table>'+(b.rows||[]).map((r,i)=>'<tr>'+r.map(c=>`<${i?'td':'th'}>${inline(c)}</${i?'td':'th'}>`).join('')+'</tr>').join('')+'</table>';
+ case'quote':return`<blockquote>${inline(b.text)}</blockquote>`;case'math':return`<div class="math">${esc(b.text)}</div>`;
+ case'code':return`<pre>${esc(b.text)}</pre>`;case'margin':return`<div class="margin">${inline(b.text)}</div>`;
+ case'figure':return`<div class="fig">Figure: ${inline(b.text)}</div>`;default:return`<p>${inline(b.text||'')}</p>`}}).join('')}
+const plain=h=>{const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('.pbreak').forEach(e=>e.remove());d.querySelectorAll('p,h1,h2,h3,.li,tr,blockquote,pre,.margin,.fig,.math').forEach(e=>e.append('\n'));return d.textContent.replace(/\n{3,}/g,'\n\n').trim()};
+/* ---------- navigation ---------- */
+const TABS=[['library','Library','lib'],['reader','Reader','doc'],['learn','Learn','cap'],['map','Mind map','map']];
+let enT;
+function setView(v){S.view=v;if(v!=='reader')$('#selbar').hidden=true;main.classList.add('enter');render();clearTimeout(enT);enT=setTimeout(()=>main.classList.remove('enter'),900)}
+/* layouts */
+const LAYS=[['classic','Classic','Tabs across the top. Simple and familiar.','M3 5h18v4H3zM3 12h18v7H3z'],['sidebar','Sidebar','Your files and maps always visible on the left.','M3 4h6v16H3zM12 4h9v16h-9z'],['split','Split study','Buddy stays open next to your work, so you can read and ask at once.','M3 4h11v16H3zM17 4h4v16h-4z']];
+function applyLayout(){$('#app').dataset.layout=S.layout}
+function setLayout(v){const was=S.layout;S.layout=v;try{localStorage.setItem('sd-layout',v)}catch{}applyLayout();if(v==='split')openBuddy(true);else if(was==='split')openBuddy(false);$('#laymenu').hidden=true;render()}
+function renderLayMenu(){$('#laymenu').innerHTML='<b style="display:block;margin:2px 4px 8px;font:600 14px var(--disp)">Choose a layout</b>'+LAYS.map(([k,n,d,p])=>`<button class="lopt${S.layout===k?' on':''}" data-act="setlay" data-v="${k}"><svg width="40" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="${p}"/></svg><span><b>${n}</b>${d}</span></button>`).join('')}
+function renderRail(){const r=$('#rail');if(!r)return;const docs=[...S.docs].sort((a,b)=>b.created-a.created),maps=[...S.maps].sort((a,b)=>b.created-a.created),none='<div class="muted" style="padding:4px 9px;font-size:13px">Nothing yet</div>';
+ r.innerHTML=TABS.map(([k,l,i])=>`<button class="ritem${S.view===k||(S.view==='scan'&&k==='library')?' on':''}" data-act="nav" data-v="${k}">${ic(i,16)}<span>${l}</span></button>`).join('')
+ +'<div class="rsec">Files</div>'+(docs.map(d=>`<button class="ritem${S.view==='reader'&&S.docId===d.id?' on':''}" data-act="opendoc" data-id="${d.id}">${ic('doc',15)}<span>${esc(d.title)}</span></button>`).join('')||none)
+ +'<div class="rsec">Mind maps</div>'+(maps.map(m=>`<button class="ritem${S.view==='map'&&S.mapId===m.id?' on':''}" data-act="openmap" data-id="${m.id}">${ic('map',15)}<span>${esc(m.title||'Untitled map')}</span></button>`).join('')||none)
+ +`<div class="rsec">Add</div><button class="ritem" data-act="pick">${ic('upload',15)}<span>Upload files</span></button><button class="ritem" data-act="scanstart">${ic('scan',15)}<span>Scan pages</span></button>`}
+function loadUI(){try{const l=localStorage.getItem('sd-layout');if(LAYS.some(x=>x[0]===l))S.layout=l;const t=localStorage.getItem('sd-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;const f=+localStorage.getItem('sd-fs');if(f>=14&&f<=26)S.fs=f}catch{}
+ S.layout=S.layout||'classic';S.fs=S.fs||17;document.documentElement.style.setProperty('--rs',S.fs+'px');applyLayout();if(S.layout==='split')openBuddy(true)}
+function renderChrome(){$('#tabs').innerHTML=TABS.map(([k,l,i])=>`<button data-act="nav" data-v="${k}" class="${S.view===k||(S.view==='scan'&&k==='library')?'on':''}">${ic(i,16)}${l}</button>`).join('');
+ $('#buddyBtn').innerHTML=ic('spark',16)+'Buddy';$('#layBtn').innerHTML=ic('grid',16)+'<span class="lt">Layout</span>';$('#themeBtn').innerHTML=ic('moon',16);renderRail()}
+function render(){renderChrome();({library:viewLibrary,reader:viewReader,scan:viewScan,map:viewMap,learn:viewLearn})[S.view]();renderBuddyCtx();renderChat()}
+/* ---------- library ---------- */
+function viewLibrary(){
+ const docs=[...S.docs].sort((a,b)=>b.created-a.created),maps=[...S.maps].sort((a,b)=>b.created-a.created);
+ const kindLabel={note:'Note',text:'Text',pdf:'PDF',image:'Image',doc:'Word',file:'File',scan:'Scanned'};
+ const dcard=(d,i)=>`<div class="card" style="--i:${Math.min(i,10)}"><div class="nm">${esc(d.title)}</div><div class="meta"><span class="badge">${kindLabel[d.kind]||'File'}</span>${d.example?'<span class="badge ex">Example</span>':''}${reviewBadge(d)}<span>${fmtDate(d.created)}</span>${d.size?`<span>${fmtSize(d.size)}</span>`:''}</div>
+ <div class="row"><button class="btn sm primary" data-act="opendoc" data-id="${d.id}">Open</button><button class="btn sm" data-act="learndoc" data-id="${d.id}">Learn</button><button class="btn sm danger" data-act="deldoc" data-id="${d.id}">${S.confirm===d.id?'Tap again to delete':ic('trash',15)}</button></div></div>`;
+ const mcard=(m,i)=>`<div class="card" style="--i:${Math.min(i,10)}"><div class="nm">${esc(m.title||'Untitled map')}</div><div class="meta">${m.example?'<span class="badge ex">Example</span>':''}${m.docId&&S.docs.find(z=>z.id===m.docId)?'<span class="badge">'+esc(S.docs.find(z=>z.id===m.docId).title.slice(0,20))+'</span>':''}<span>${m.nodes.length} bubbles</span><span>${fmtDate(m.created)}</span></div>
+ <div class="row"><button class="btn sm primary" data-act="openmap" data-id="${m.id}">Open</button><button class="btn sm danger" data-act="delmap" data-id="${m.id}">${S.confirm===m.id?'Tap again to delete':ic('trash',15)}</button></div></div>`;
+ main.innerHTML=`<div class="lib"><div class="hero"><h2>Your desk</h2><span class="muted">${docs.length} ${docs.length===1?'file':'files'} · ${maps.length} ${maps.length===1?'map':'maps'}</span></div>${nextUpHtml()}<div class="drop" id="drop"><div class="t"><b>Bring in your material</b><span class="muted">Drop any file here: PDF, Word, text, CSV, images or anything else. Then read, mark up and work on it yourself.</span></div>
+ <div class="acts"><button class="btn primary" data-act="pick">${ic('upload')}Upload files</button><button class="btn" data-act="scanstart">${ic('scan')}Scan handwriting or book pages</button></div></div>
+ <div><div class="sect"><h3>Files</h3><button class="btn sm" data-act="newnote">${ic('plus',15)}Blank note</button></div>${docs.length?`<div class="grid">${docs.map(dcard).join('')}</div>`:'<div class="hint">No files yet.</div>'}</div>
+ <div><div class="sect"><h3>Mind maps</h3><button class="btn sm" data-act="newmap">${ic('plus',15)}New map</button></div>${maps.length?`<div class="grid">${maps.map(mcard).join('')}</div>`:'<div class="hint">No maps yet.</div>'}</div></div>`}
+function bindDrop(){const dz=()=>$('#drop');
+ document.addEventListener('dragover',e=>{if(S.view==='library'&&dz()){e.preventDefault();dz().classList.add('over')}});
+ document.addEventListener('dragleave',e=>{if(!e.relatedTarget&&dz())dz().classList.remove('over')});
+ document.addEventListener('drop',e=>{if(S.view==='library'&&dz()){e.preventDefault();dz().classList.remove('over');if(e.dataTransfer.files.length)importFiles([...e.dataTransfer.files])}})}
+/* ---------- importing ---------- */
+const TEXTEXT=/\.(txt|md|markdown|csv|tsv|json|html?|xml|log|js|ts|py|java|c|cpp|css|yml|yaml|rtf)$/i;
+async function importFiles(files){for(const f of files){try{await importOne(f)}catch(e){toast('Could not read '+f.name)}}
+ render()}
+async function importOne(f){const id=uid(),d={id,title:f.name.replace(/\.[^.]+$/,''),name:f.name,mime:f.type,size:f.size,created:Date.now(),kind:'file',html:'',text:'',blobId:id};
+ await store.put('blobs',{id,blob:f});
+ if(f.type.startsWith('image/')){d.kind='image'}
+ else if(/pdf$/i.test(f.type)||/\.pdf$/i.test(f.name)){d.kind='pdf';toast('Reading '+f.name+'…');const r=await readPdf(f);d.pages=r.pages.length;d.text=r.pages.join('\n\n');
+  d.html=r.pages.map((t,i)=>`<div class="pbreak">Page ${i+1}</div>`+t.split(/\n{2,}/).filter(x=>x.trim()).map(p=>`<p>${esc(p.replace(/\n/g,' '))}</p>`).join('')).join('')}
+ else if(/\.docx$/i.test(f.name)&&window.mammoth){d.kind='doc';const r=await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()});d.html=r.value;d.text=plain(r.value)}
+ else if(f.type.startsWith('text/')||TEXTEXT.test(f.name)){const t=await f.text();d.kind='text';d.text=t;
+  d.html=/\.(md|markdown)$/i.test(f.name)?mdToHtml(t):/\.(csv|tsv)$/i.test(f.name)?csvToHtml(t.replace(/\t/g,',')):/\.json$/i.test(f.name)?`<pre>${esc((()=>{try{return JSON.stringify(JSON.parse(t),null,2)}catch{return t}})())}</pre>`:textToHtml(t)}
+ S.docs.push(d);await saveDoc(d);useDoc(d.id)}
+async function readPdf(f){if(!window.pdfjsLib)throw new Error('pdf');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,pages=[];
+ for(let i=1;i<=pdf.numPages;i++){const tc=await(await pdf.getPage(i)).getTextContent();let out='',ly=null,lh=10;
+  for(const it of tc.items){if(!('str' in it))continue;const y=it.transform[5],h=Math.abs(it.height)||lh;
+   if(ly!==null){const dy=Math.abs(ly-y);if(dy>h*1.9)out+='\n\n';else if(dy>h*.5)out+='\n';else if(out&&!/\s$/.test(out)&&!/^\s/.test(it.str))out+=' '}
+   out+=it.str;ly=y;lh=h}
+  pages.push(out.trim())}
+ return{pages}}
+/* ---------- reader ---------- */
+let editing=false;
+function viewReader(){const d=curDoc();
+ if(!d){main.innerHTML=`<div class="empty"><b>No document open</b><span>Open a file from your library to read and work on it.</span><button class="btn primary" data-act="nav" data-v="library">Go to library</button></div>`;return}
+ const orig=d.scanIds||d.kind==='pdf'||d.kind==='image';
+ main.innerHTML=`<div class="reader"><div class="rbar"><button class="btn sm" data-act="nav" data-v="library">${ic('back',15)}Library</button>
+ <input class="ttl" id="ttl" value="${esc(d.title)}" aria-label="Title"><span class="fsz"><button class="ib" data-act="fs" data-v="-1" aria-label="Smaller text">A−</button><button class="ib" data-act="fs" data-v="1" aria-label="Larger text">A+</button></span>${orgBar(d)}
+ ${orig?`<button class="btn sm" data-act="orig">${ic('img',15)}Originals</button>`:''}
+ ${d.kind!=='image'&&d.kind!=='file'?`<button class="btn sm" data-act="edit">${ic('edit',15)}${editing?'Done editing':'Edit text'}</button><button class="btn sm" data-act="exptxt">${ic('dl',15)}.txt</button><button class="btn sm" data-act="exphtml">${ic('dl',15)}.html</button>`:''}</div>
+ <div class="prog"><i id="progI"></i></div><div class="pw"><article class="paper${orgOn(d)?' org':''}${orgOn(d)&&d.cover?' cover':''}" id="paper" ${editing?'contenteditable="true"':''}>${paperHtml(d)}</article></div></div>`;
+ if(d.kind==='image')store.get('blobs',d.blobId).then(b=>{const el=$('#imgslot');if(b&&el)el.innerHTML=`<img alt="${esc(d.title)}" src="${URL.createObjectURL(b.blob)}">`});
+ $('#ttl').oninput=e=>{d.title=e.target.value;saveDoc(d)};const pw=$('.pw'),pi=$('#progI');if(pw&&pi)pw.onscroll=()=>{const m=pw.scrollHeight-pw.clientHeight;pi.style.width=(m>0?Math.min(100,pw.scrollTop/m*100):0)+'%'};maybeOrganize(d)}
+function paperHtml(d){if(orgOn(d))return orgHtml(d);
+ if(d.kind==='image')return`<div id="imgslot"></div><p class="muted" style="font:14px var(--ui)">Use Buddy to ask about this image, or turn handwriting or a printed page into an organized document.</p><button class="btn primary" data-act="img2scan">${ic('scan')}Convert to document</button>`;
+ if(d.kind==='file')return`<p>This file type can't be shown as text here. It is stored in your library.</p>`;
+ if(d.kind==='pdf'&&!(d.text||'').trim())return`<p>This PDF has no selectable text (it may be scanned).</p><button class="btn primary" data-act="pdf2scan">${ic('scan')}Convert pages to a document</button>`;
+ return d.html||'<p><br></p>'}
+/* selection -> Buddy */
+let selT;
+document.addEventListener('selectionchange',()=>{clearTimeout(selT);selT=setTimeout(()=>{const sel=getSelection(),bar=$('#selbar'),paper=$('#paper');
+ if(!paper||S.view!=='reader'||!sel||sel.isCollapsed||editing){bar.hidden=true;return}
+ const r=sel.getRangeAt(0);if(!paper.contains(r.commonAncestorContainer)){bar.hidden=true;return}
+ const t=sel.toString().trim();if(!t){bar.hidden=true;return}
+ S.sel={text:t,docId:S.docId,title:curDoc()?.title||''};renderBuddyCtx();
+ bar.innerHTML=[['explain','Explain'],['map','Mind map'],['quiz','Quiz'],['ask','Ask…']].map(([k,l])=>`<button data-act="sb" data-v="${k}">${l}</button>`).join('');
+ bar.hidden=false},220)});
+$('#selbar').addEventListener('pointerdown',e=>e.preventDefault());
+/* lightbox */
+const LB={n:0,count:0,draw:null};
+function openLB(count,draw){LB.n=0;LB.count=count;LB.draw=draw;paintLB();$('#lb').hidden=false}
+async function paintLB(){const lb=$('#lb');lb.innerHTML=`<div class="row"><button class="btn sm" data-act="lbprev">${ic('back',15)}</button><span>Page ${LB.n+1} of ${LB.count}</span><button class="btn sm" data-act="lbnext" style="transform:scaleX(-1)">${ic('back',15)}</button><button class="btn sm" data-act="lbclose">${ic('x',15)}Close</button></div><div id="lbslot" class="muted" style="color:#fff">Loading…</div>`;
+ const el=await LB.draw(LB.n);const slot=$('#lbslot');if(slot){slot.innerHTML='';slot.append(el)}}
+async function openOriginals(){const d=curDoc();if(!d)return;
+ if(d.scanIds){const urls=[];for(const id of d.scanIds){const b=await store.get('blobs',id);if(b)urls.push(URL.createObjectURL(b.blob))}
+  if(!urls.length)return toast('Original photos are not available.');openLB(urls.length,async i=>{const im=new Image();im.src=urls[i];return im})}
+ else if(d.kind==='image'){const b=await store.get('blobs',d.blobId);openLB(1,async()=>{const im=new Image();im.src=URL.createObjectURL(b.blob);return im})}
+ else if(d.kind==='pdf'){const b=await store.get('blobs',d.blobId);const pdf=await pdfjsLib.getDocument({data:await b.blob.arrayBuffer()}).promise;
+  openLB(pdf.numPages,async i=>{const pg=await pdf.getPage(i+1),vp=pg.getViewport({scale:1.4}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;return c})}}
+/* ---------- scan: photos of handwriting or book pages -> organized document ---------- */
+const SC={pages:[],type:'handwriting',keep:true,hint:'',running:false,title:''};
+async function normImg(file){const bm=await createImageBitmap(file).catch(()=>null);if(!bm)return file;const k=Math.min(1,1800/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+ return new Promise(r=>c.toBlob(b=>r(b||file),'image/jpeg',.88))}
+async function addPhotos(files){for(const f of files){if(!f.type.startsWith('image/'))continue;const b=await normImg(f);SC.pages.push({id:uid(),blob:b,url:URL.createObjectURL(b),status:'',blocks:null})}if(S.view==='scan')viewScan()}
+function viewScan(){const ps=SC.pages,hasFail=ps.some(p=>p.status==='fail');
+ main.innerHTML=`<div class="scan"><div class="rbar"><button class="btn sm" data-act="nav" data-v="library">${ic('back',15)}Library</button><h3>Scan handwriting or book pages</h3></div>
+ <p class="muted" style="margin:0">Add one photo per page, in order. Claude reads each page and rebuilds it as a real document with headings, lists, tables and indents in the right places. Nothing is reworded. Each page is read, then checked a second time against your photo.</p>
+ <div class="acts"><button class="btn primary" data-act="cam">${ic('scan')}Take photo</button><button class="btn" data-act="gallery">${ic('img')}Choose photos</button></div>
+ ${ps.length?`<div class="thumbs">${ps.map((p,i)=>`<div class="th"><img src="${p.url}" alt="Page ${i+1}"><div class="row"><b>Page ${i+1}</b><span class="${p.status==='ok'?'st-ok':p.status==='fail'?'st-bad':'muted'}">${p.status==='ok'?'Done':p.status==='fail'?'Failed':p.status==='run'?(p.note||'Reading…'):''}</span></div>
+ <div class="row"><button class="ib" data-act="pgup" data-i="${i}" aria-label="Move earlier">${ic('up',15)}</button><button class="ib" data-act="pgdn" data-i="${i}" aria-label="Move later">${ic('down',15)}</button><button class="ib" data-act="pgrot" data-i="${i}" aria-label="Rotate">${ic('redo',15)}</button><button class="ib" data-act="pgdel" data-i="${i}" aria-label="Remove">${ic('trash',15)}</button></div></div>`).join('')}</div>`:'<div class="hint">No pages yet.</div>'}
+ <div class="opts"><label>Source <select id="scType"><option value="handwriting"${SC.type==='handwriting'?' selected':''}>Handwriting</option><option value="printed"${SC.type==='printed'?' selected':''}>Printed book or paper</option><option value="mixed"${SC.type==='mixed'?' selected':''}>Mixed</option></select></label>
+ <label><input type="checkbox" id="scKeep"${SC.keep?' checked':''}> Keep my layout (indents, columns, margin notes)</label></div>
+ <div class="opts"><input type="text" id="scHint" placeholder="Optional: language or subject, e.g. Burmese, biology" value="${esc(SC.hint)}" style="flex:1;min-width:200px"></div>
+ <div class="acts"><button class="btn primary" data-act="runscan" ${!ps.length||SC.running?'disabled':''}>${SC.running?'Converting…':hasFail?'Retry failed pages':'Convert to document'}</button></div></div>`;
+ $('#scType').onchange=e=>SC.type=e.target.value;$('#scKeep').onchange=e=>SC.keep=e.target.checked;$('#scHint').oninput=e=>SC.hint=e.target.value}
+let SAMPLE;const getSample=()=>SAMPLE||(SAMPLE=(async()=>{try{return window.claude?await window.claude.use('sample'):null}catch{return null}})());
+function parseJSON(t){let s=String(t||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');try{return JSON.parse(s)}catch{}const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch{}}return null}
+const errMsg=e=>({not_granted:'Claude access was declined for this page. Allow it to use this feature.',rate_limited:'Too many requests right now. Wait a moment, then try again.',sampling_disabled:'Claude is not available for this account.',unavailable:'Buddy is not available in this view.',images_unavailable:'Photo reading is not available in this view.',session_expired:'Please sign in again.'}[e&&e.code]||'Something went wrong. Try again.');
+function scanPrompt(){return`Transcribe this page photo into structured JSON. Keep the page's real structure and reading order.
+Source: ${SC.type==='handwriting'?'handwritten notes':SC.type==='printed'?'a printed page':'mixed handwriting and print'}.${SC.hint?' Hint from the user: '+SC.hint+'.':''}
+Rules:
+- Copy the words exactly as written. Do not correct, reword, summarize, translate or add anything.
+- If a word is unclear, choose the most likely reading from the surrounding words. Never write brackets, question marks or notes about uncertainty.
+- ${SC.keep?'Keep headings, numbered and bulleted lists with their nesting depth, tables, margin notes, equations and underlined or boxed emphasis in the same places they appear.':'Use a clean reading order; merge broken lines into paragraphs.'}
+- Ignore shadows, page edges, fingers and background. Describe diagrams only as their labels or caption.
+Reply with JSON only: {"blocks":[...]} where each block is one of:
+{"t":"h","level":1,"text":""} {"t":"p","text":""} {"t":"ul","items":[{"text":"","depth":0}]} {"t":"ol","items":[{"text":"","depth":0}]} {"t":"table","rows":[["",""]]} {"t":"quote","text":""} {"t":"math","text":""} {"t":"code","text":""} {"t":"margin","text":""} {"t":"figure","text":""}
+Use **bold** inside text for underlined, bold or boxed words.`}
+const verifyPrompt=j=>`Here is a draft transcription of this page photo, as JSON:\n${JSON.stringify(j)}\n\nCheck it against the photo line by line. Fix misread words, missing or repeated lines, wrong reading order, wrong list nesting and wrong table cells. Do not reword, respell or add anything that is not on the page. Never write brackets or notes about uncertainty. Reply with only the corrected JSON in the same format: {"blocks":[...]}`;
+async function runScan(){if(SC.running)return;const sample=await getSample();if(!sample)return toast('Claude is not available in this view.');
+ const lim=await sample.limits().catch(()=>null);if(!lim||!lim.images)return toast(errMsg({code:'images_unavailable'}));
+ SC.running=true;viewScan();
+ for(const p of SC.pages){if(p.status==='ok')continue;p.status='run';viewScan();
+  try{const r=await sample(scanPrompt(),{images:p.blob,modelTier:'complex',cache:false});const j=parseJSON(r.text);if(!j||!Array.isArray(j.blocks)||!j.blocks.length)throw{code:'invalid_json'};p.blocks=j.blocks;p.note='Checking…';viewScan();try{const v=await sample(verifyPrompt(j),{images:p.blob,modelTier:'complex',cache:false}),k=parseJSON(v.text);if(k&&Array.isArray(k.blocks)&&k.blocks.length>=Math.ceil(j.blocks.length*.5))p.blocks=k.blocks}catch(e2){if(e2&&e2.code==='not_granted')throw e2}p.note='';p.status='ok'}catch(e){p.note='';p.status='fail';if(e&&(e.code==='not_granted'||e.code==='rate_limited')){toast(errMsg(e));break}}viewScan()}
+ SC.running=false;
+ if(SC.pages.every(p=>p.status==='ok'))return finishScan();
+ viewScan();toast('Some pages failed. Retry them, or remove them.')}
+async function finishScan(){const id=uid(),ids=[];
+ for(const p of SC.pages){const bid=uid();await store.put('blobs',{id:bid,blob:p.blob});ids.push(bid)}
+ const all=SC.pages.flatMap(p=>p.blocks),first=all.find(b=>b.t==='h');
+ const html=SC.pages.map((p,i)=>(i?`<div class="pbreak" contenteditable="false">Page ${i+1}</div>`:'')+blocksToHtml(p.blocks)).join('');
+ const d={id,title:(first&&String(first.text).replace(/\*\*/g,'').slice(0,60))||'Scanned notes',kind:'scan',created:Date.now(),html,text:plain(html),scanIds:ids,size:0};
+ S.docs.push(d);await saveDoc(d);useDoc(id);SC.pages=[];SC.running=false;editing=false;setView('reader');toast('Your document is ready.')}
+async function pdfToScan(){const d=curDoc(),b=await store.get('blobs',d.blobId);if(!b||!window.pdfjsLib)return;toast('Preparing pages…');
+ const pdf=await pdfjsLib.getDocument({data:await b.blob.arrayBuffer()}).promise;SC.pages=[];
+ for(let i=1;i<=Math.min(pdf.numPages,30);i++){const pg=await pdf.getPage(i),vp=pg.getViewport({scale:1.6}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+  const bl=await new Promise(r=>c.toBlob(r,'image/jpeg',.85));SC.pages.push({id:uid(),blob:bl,url:URL.createObjectURL(bl),status:'',blocks:null})}
+ setView('scan')}
+async function imgToScan(){const d=curDoc(),b=await store.get('blobs',d.blobId);if(!b)return;const bl=await normImg(b.blob);SC.pages=[{id:uid(),blob:bl,url:URL.createObjectURL(bl),status:'',blocks:null}];setView('scan')}
+/* ---------- mind map ---------- */
+const M={map:null,tool:'select',sel:null,view:{x:0,y:0,k:1},hist:[],fut:[],pending:null,pen:'ink',pw:3,drag:null,ptrs:new Map(),pinch:null,last:null,tmpLine:null};
+const newMapObj=(title='Untitled map')=>({id:uid(),title,created:Date.now(),nodes:[],edges:[],strokes:[]});
+function wrapText(t,max=18){const lines=[];let cur='';for(const w of String(t||'').split(/\s+/).filter(Boolean)){if(cur&&(cur+' '+w).length>max){lines.push(cur);cur=w}else cur=(cur+' '+w).trim()}if(cur)lines.push(cur);return lines.length?lines:['']}
+function dims(n){const lines=wrapText(n.text),len=Math.max(4,...lines.map(l=>l.length));return{lines,w:Math.max(84,len*8.2+34),h:Math.max(44,lines.length*20+22)}}
+const PENC={ink:'var(--ink)',accent:'var(--accent)',bad:'var(--bad)',good:'var(--good)'};
+function clip(n,tx,ty){const d=dims(n),dx=tx-n.x,dy=ty-n.y,L=Math.hypot(dx,dy)||1,a=d.w/2*(n.shape==='ellipse'?1.12:1),b=d.h/2*(n.shape==='ellipse'?1.12:1);
+ const t=n.shape==='ellipse'?1/Math.sqrt((dx/L/a)**2+(dy/L/b)**2):Math.min(a/Math.abs(dx/L||1e-9),b/Math.abs(dy/L||1e-9));return[n.x+dx/L*t,n.y+dy/L*t]}
+function drawMap(){const m=M.map,w=$('#world');if(!w)return;const v=M.view;if(!v)return;w.setAttribute('transform',`translate(${v.x} ${v.y}) scale(${v.k})`);
+ const pat=$('#gp');if(pat)pat.setAttribute('patternTransform',`translate(${v.x} ${v.y}) scale(${v.k})`);
+ const byId=Object.fromEntries(m.nodes.map(n=>[n.id,n]));let h='';
+ for(const s of m.strokes)h+=`<path data-k="stroke" data-id="${s.id}" d="${s.pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('')}" fill="none" stroke="${PENC[s.c]||PENC.ink}" stroke-width="${s.w}" stroke-linecap="round" stroke-linejoin="round" opacity="${M.sel&&M.sel.id===s.id?.6:1}"/>`;
+ for(const e of m.edges){const a=byId[e.a],b=byId[e.b];if(!a||!b)continue;const p=clip(a,b.x,b.y),q=clip(b,a.x,a.y),on=M.sel&&M.sel.id===e.id;
+  h+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${on?'var(--accent)':'var(--nstroke)'}" stroke-width="${on?3.5:2}" stroke-linecap="round"/><line data-k="edge" data-id="${e.id}" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="transparent" stroke-width="18"/>`}
+ for(const n of m.nodes){const d=dims(n),cls=['node',M.sel&&M.sel.id===n.id?'sel':'',M.pending===n.id?'pend':''].join(' ');
+  const shape=n.shape==='text'?`<rect class="sh" x="${-d.w/2}" y="${-d.h/2}" width="${d.w}" height="${d.h}" fill="transparent" stroke="${M.sel&&M.sel.id===n.id?'var(--accent)':'none'}" style="${M.sel&&M.sel.id===n.id?'':'stroke:none'}" rx="8"/>`
+   :n.shape==='rect'?`<rect class="sh" x="${-d.w/2}" y="${-d.h/2}" width="${d.w}" height="${d.h}" rx="10" style="fill:var(--c${n.c||1})"/>`
+   :`<ellipse class="sh" rx="${d.w/2*1.12}" ry="${d.h/2*1.12}" style="fill:var(--c${n.c||1})"/>`;
+  h+=`<g class="${cls}" data-k="node" data-id="${n.id}" transform="translate(${n.x} ${n.y})">${shape}<text text-anchor="middle" dominant-baseline="central" style="${n.root?'font-weight:700':''}">${d.lines.map((l,i)=>`<tspan x="0" y="${(i-(d.lines.length-1)/2)*20}">${esc(l)}</tspan>`).join('')}</text></g>`}
+ if(M.tmpLine)h+=`<line x1="${M.tmpLine[0]}" y1="${M.tmpLine[1]}" x2="${M.tmpLine[2]}" y2="${M.tmpLine[3]}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5"/>`;
+ w.innerHTML=h}
+let saveT;const touchMap=()=>{clearTimeout(saveT);saveT=setTimeout(()=>{if(M.map)store.put('maps',M.map)},350)};
+const snap=()=>{M.hist.push(JSON.stringify(M.map));if(M.hist.length>60)M.hist.shift();M.fut=[]};
+const afterMap=()=>{touchMap();drawMap();mapCtx();const u=$('#undoB'),r=$('#redoB');if(u)u.disabled=!M.hist.length;if(r)r.disabled=!M.fut.length};
+function mapUndo(){if(!M.hist.length)return;M.fut.push(JSON.stringify(M.map));const o=M.map;M.map=JSON.parse(M.hist.pop());S.maps[S.maps.indexOf(o)]=M.map;M.sel=null;afterMap()}
+function mapRedo(){if(!M.fut.length)return;M.hist.push(JSON.stringify(M.map));const o=M.map;M.map=JSON.parse(M.fut.pop());S.maps[S.maps.indexOf(o)]=M.map;M.sel=null;afterMap()}
+function openMapById(id){const m=S.maps.find(x=>x.id===id);if(!m)return;if(m.docId&&S.docs.some(d=>d.id===m.docId))useDoc(m.docId);S.mapId=id;M.map=m;M.hist=[];M.fut=[];M.sel=null;M.pending=null;M.view=null;setView('map')}
+function viewMap(){M.rec=false;if(!M.map){const d0=curDoc(),m=newMapObj(d0?'Map: '+d0.title.slice(0,50):'Untitled map');if(d0)m.docId=d0.id;S.maps.push(m);store.put('maps',m);S.mapId=m.id;M.map=m;M.hist=[];M.fut=[]}
+ const T=[['select','cursor','Move'],['bubble','bubble','Bubble'],['connect','link','Connect'],['pen','pen','Draw'],['text','text','Text'],['erase','eraser','Erase']];
+ main.innerHTML=`<div class="mapview"><div class="rbar" style="padding:0"><button class="btn sm" data-act="nav" data-v="library">${ic('back',15)}Library</button><input class="ttl" id="mttl" value="${esc(M.map.title)}" aria-label="Map title">
+ <button class="ib" id="undoB" data-act="mundo" aria-label="Undo">${ic('undo')}</button><button class="ib" id="redoB" data-act="mredo" aria-label="Redo">${ic('redo')}</button><button class="btn sm" data-act="mtidy">${ic('grid',15)}<span>Tidy up</span></button><button class="btn sm" id="recB" data-act="mrec">${ic('cap',15)}<span>Recall</span></button><button class="btn sm" id="aiB" data-act="mai">${ic('spark',15)}<span>Draw with AI</span></button><button class="btn sm" data-act="mexp">${ic('dl',15)}.svg</button></div>
+ <div class="tools">${T.map(([k,i,l])=>`<button class="tool${M.tool===k?' on':''}" data-act="tool" data-v="${k}">${ic(i)}${l}</button>`).join('')}</div>
+ <div class="ctx" id="ctx"></div>
+ <div id="mapwrap"><svg id="cv" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="gp" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.2" fill="var(--grid)"/></pattern></defs><rect width="100%" height="100%" fill="url(#gp)"/><g id="world"></g></svg>
+ <div class="zoom"><button data-act="zin" aria-label="Zoom in">${ic('plus',16)}</button><button data-act="zout" aria-label="Zoom out">${ic('minus',16)}</button><button data-act="zfit" aria-label="Fit">${ic('fit',16)}</button></div></div></div>`;
+ $('#mttl').oninput=e=>{M.map.title=e.target.value;touchMap()};
+ const cv=$('#cv');requestAnimationFrame(()=>{if(!M.view){const r=cv.getBoundingClientRect();M.view={x:r.width/2,y:r.height/2,k:1};if(M.map.nodes.length)fitMap()}drawMap()});
+ cv.addEventListener('pointerdown',mDown);cv.addEventListener('pointermove',mMove);cv.addEventListener('pointerup',mUp);cv.addEventListener('pointercancel',mUp);cv.addEventListener('wheel',mWheel,{passive:false});
+ mapCtx();afterMap()}
+function mapCtx(){const el=$('#ctx');if(!el)return;const n=M.sel&&M.sel.type==='node'?M.map.nodes.find(x=>x.id===M.sel.id):null;let h='';
+ if(n)h=`<span class="lbl">Color</span>${[1,2,3,4,5,6].map(i=>`<button class="sw${n.c===i?' on':''}" style="background:var(--c${i})" data-act="ncolor" data-v="${i}" aria-label="Color ${i}"></button>`).join('')}<span class="sep"></span>${[['ellipse','Round'],['rect','Box'],['text','Plain']].map(([s,l])=>`<button class="chip${n.shape===s?' on':''}" data-act="nshape" data-v="${s}">${l}</button>`).join('')}<span class="sep"></span><button class="chip primary2" data-act="nchild">Add child</button><button class="chip" data-act="nsib">Add sibling</button><button class="chip" data-act="nedit">Edit text</button><button class="chip" data-act="nlink">Connect to…</button><button class="chip danger" data-act="ndel">Delete</button>`;
+ else if(M.sel)h=`<span class="lbl">${M.sel.type==='edge'?'Line':'Drawing'} selected</span><button class="chip danger" data-act="ndel">Delete</button>`;
+ else if(M.tool==='pen')h=`<span class="lbl">Pen</span>${Object.keys(PENC).map(c=>`<button class="sw${M.pen===c?' on':''}" style="background:${PENC[c]}" data-act="pcolor" data-v="${c}" aria-label="${c}"></button>`).join('')}<span class="sep"></span>${[2,4,8].map(w=>`<button class="chip${M.pw===w?' on':''}" data-act="pw" data-v="${w}">${['Thin','Medium','Thick'][[2,4,8].indexOf(w)]}</button>`).join('')}`;
+ else h=`<span class="lbl">${{select:'Drag bubbles to move them. Drag empty space to pan. Double-tap a bubble to edit.',bubble:'Tap empty space to add a bubble.',connect:M.pending?'Now tap the bubble to connect to.':'Tap a bubble, then tap another, or drag from one to another.',text:'Tap empty space to add a text label.',erase:'Tap or drag over things to remove them.'}[M.tool]||''}</span>`;
+ el.innerHTML=h;mapEmpty()}
+function toWorld(e){const r=$('#cv').getBoundingClientRect();return[(e.clientX-r.left-M.view.x)/M.view.k,(e.clientY-r.top-M.view.y)/M.view.k]}
+function hit(e){const t=document.elementFromPoint(e.clientX,e.clientY),el=t&&t.closest&&t.closest('[data-k]');return el?{k:el.dataset.k,id:el.dataset.id}:null}
+function addNode(x,y,text='',shape='ellipse',c=1){const n={id:uid(),x,y,text,shape,c};M.map.nodes.push(n);return n}
+function addEdge(a,b){if(a===b||M.map.edges.some(e=>(e.a===a&&e.b===b)||(e.a===b&&e.b===a)))return;snap();M.map.edges.push({id:uid(),a,b});afterMap()}
+function delItem(h){snap();const m=M.map;if(h.k==='node'){m.nodes=m.nodes.filter(n=>n.id!==h.id);m.edges=m.edges.filter(e=>e.a!==h.id&&e.b!==h.id)}else if(h.k==='edge')m.edges=m.edges.filter(e=>e.id!==h.id);else m.strokes=m.strokes.filter(s=>s.id!==h.id);if(M.sel&&M.sel.id===h.id)M.sel=null;afterMap()}
+function mDown(e){if(M.edTa)return;if(M.rec){const hh=hit(e);if(hh&&hh.k==='node'){M.shown=M.shown||new Set();M.shown.has(hh.id)?M.shown.delete(hh.id):M.shown.add(hh.id);drawMap();return}}if(e.pointerType==='pen')M.sawPen=true;$('#cv').setPointerCapture(e.pointerId);M.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(M.ptrs.size===2){const[a,b]=[...M.ptrs.values()];M.pinch={d:Math.hypot(a.x-b.x,a.y-b.y),cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,v:{...M.view}};M.drag=null;return}
+ const h=hit(e),w=toWorld(e),t=M.tool;M.drag={sx:e.clientX,sy:e.clientY,moved:false,h,w};
+ if(t==='select'||t==='bubble'){if(h&&h.k==='node'){const n=M.map.nodes.find(x=>x.id===h.id);M.sel={type:'node',id:h.id};M.drag.type='node';M.drag.ox=n.x-w[0];M.drag.oy=n.y-w[1];M.drag.snapped=false;
+   const now=Date.now();if(M.last&&M.last.id===h.id&&now-M.last.t<350){M.drag=null;startEdit(h.id)}M.last={id:h.id,t:now};afterMap()}
+  else if(h){M.sel={type:h.k,id:h.id};M.drag.type='none';afterMap()}
+  else{M.sel=null;M.drag.type=t==='bubble'?'add':'pan';M.drag.vx=M.view.x;M.drag.vy=M.view.y;afterMap()}}
+ else if(t==='text'){M.drag.type='addtext'}
+ else if(t==='connect'){if(h&&h.k==='node'){if(M.pending&&M.pending!==h.id){addEdge(M.pending,h.id);M.pending=null;M.drag=null;mapCtx();drawMap()}else{M.pending=h.id;M.drag.type='link';M.drag.from=h.id;mapCtx();drawMap()}}else{M.pending=null;M.drag.type='pan';M.drag.vx=M.view.x;M.drag.vy=M.view.y;mapCtx();drawMap()}}
+ else if(t==='pen'&&e.pointerType==='touch'&&M.sawPen){M.drag.type='pan';M.drag.vx=M.view.x;M.drag.vy=M.view.y}
+ else if(t==='pen'){snap();const s={id:uid(),pts:[w],c:M.pen,w:M.pw};M.map.strokes.push(s);M.drag.type='pen';M.drag.s=s;drawMap()}
+ else if(t==='erase'){M.drag.type='erase';if(h)delItem(h)}}
+function mMove(e){if(M.ptrs.has(e.pointerId))M.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(M.pinch&&M.ptrs.size===2){const[a,b]=[...M.ptrs.values()],d=Math.hypot(a.x-b.x,a.y-b.y),k=Math.max(.25,Math.min(2.5,M.pinch.v.k*d/M.pinch.d)),r=$('#cv').getBoundingClientRect(),px=M.pinch.cx-r.left,py=M.pinch.cy-r.top,wx=(px-M.pinch.v.x)/M.pinch.v.k,wy=(py-M.pinch.v.y)/M.pinch.v.k;
+  const ncx=(a.x+b.x)/2-r.left,ncy=(a.y+b.y)/2-r.top;M.view={k,x:ncx-wx*k,y:ncy-wy*k};drawMap();return}
+ const D=M.drag;if(!D)return;const dx=e.clientX-D.sx,dy=e.clientY-D.sy;if(Math.hypot(dx,dy)>5)D.moved=true;const w=toWorld(e);
+ if(D.type==='node'&&D.moved){if(!D.snapped){snap();D.snapped=true}const n=M.map.nodes.find(x=>x.id===D.h.id);n.x=w[0]+D.ox;n.y=w[1]+D.oy;snapNode(n);drawMap();touchMap()}
+ else if(D.type==='pan'){M.view.x=D.vx+dx;M.view.y=D.vy+dy;drawMap()}
+ else if(D.type==='pen'){D.s.pts.push(w);drawMap()}
+ else if(D.type==='link'&&D.moved){const n=M.map.nodes.find(x=>x.id===D.from);M.tmpLine=[n.x,n.y,w[0],w[1]];drawMap()}
+ else if(D.type==='erase'){const h=hit(e);if(h)delItem(h)}}
+function mUp(e){M.ptrs.delete(e.pointerId);if(M.pinch){if(M.ptrs.size<2)M.pinch=null;M.drag=null;return}
+ const D=M.drag;M.drag=null;if(!D)return;
+ if(D.type==='add'&&!D.moved){snap();const n=addNode(D.w[0],D.w[1]);M.sel={type:'node',id:n.id};afterMap();startEdit(n.id,true)}
+ else if(D.type==='addtext'&&!D.moved){snap();const n=addNode(D.w[0],D.w[1],'','text',6);M.sel={type:'node',id:n.id};afterMap();startEdit(n.id,true)}
+ else if(D.type==='link'){M.tmpLine=null;if(D.moved){const h=hit(e);if(h&&h.k==='node'&&h.id!==D.from){addEdge(D.from,h.id);M.pending=null}}mapCtx();drawMap()}
+ else if(D.type==='pen'){if(D.s.pts.length===1)D.s.pts.push([D.s.pts[0][0]+.1,D.s.pts[0][1]]);afterMap()}
+ else if(D.type==='node'||D.type==='pan')touchMap()}
+function mWheel(e){e.preventDefault();const r=$('#cv').getBoundingClientRect();
+ if(e.ctrlKey||e.metaKey){const k=Math.max(.25,Math.min(2.5,M.view.k*Math.exp(-e.deltaY*.01))),px=e.clientX-r.left,py=e.clientY-r.top,wx=(px-M.view.x)/M.view.k,wy=(py-M.view.y)/M.view.k;M.view={k,x:px-wx*k,y:py-wy*k}}
+ else{M.view.x-=e.deltaX;M.view.y-=e.deltaY}drawMap()}
+function zoomBy(f){const r=$('#cv').getBoundingClientRect(),k=Math.max(.25,Math.min(2.5,M.view.k*f)),px=r.width/2,py=r.height/2,wx=(px-M.view.x)/M.view.k,wy=(py-M.view.y)/M.view.k;M.view={k,x:px-wx*k,y:py-wy*k};drawMap()}
+function fitMap(){const m=M.map,r=$('#cv').getBoundingClientRect();let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+ for(const n of m.nodes){const d=dims(n);x0=Math.min(x0,n.x-d.w/2);x1=Math.max(x1,n.x+d.w/2);y0=Math.min(y0,n.y-d.h/2);y1=Math.max(y1,n.y+d.h/2)}
+ for(const s of m.strokes)for(const p of s.pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])}
+ if(x0>x1){M.view={x:r.width/2,y:r.height/2,k:1};drawMap();return}
+ const k=Math.max(.25,Math.min(1.4,Math.min((r.width-60)/(x1-x0||1),(r.height-60)/(y1-y0||1))));M.view={k,x:r.width/2-(x0+x1)/2*k,y:r.height/2-(y0+y1)/2*k};drawMap()}
+function startEdit(id,isNew){const n=M.map.nodes.find(x=>x.id===id),wrap=$('#mapwrap');if(!n||!wrap)return;const d=dims(n),v=M.view;
+ const ta=document.createElement('textarea');ta.id='ed';M.edTa=ta;ta.value=n.text;const w=Math.max(150,d.w*v.k);ta.style.width=w+'px';ta.style.height=Math.max(60,d.h*v.k)+'px';
+ ta.style.left=Math.max(4,Math.min(wrap.clientWidth-w-4,n.x*v.k+v.x-w/2))+'px';ta.style.top=Math.max(4,n.y*v.k+v.y-Math.max(60,d.h*v.k)/2)+'px';wrap.append(ta);ta.focus();ta.select();
+ let done=false;const fin=ok=>{if(done)return;done=true;M.edTa=null;const val=ta.value.trim();ta.remove();
+  if(ok&&val){if(val!==n.text){if(!isNew)snap();n.text=val}}else if(isNew||!val){if(isNew&&!ok||!val){M.map.nodes=M.map.nodes.filter(x=>x.id!==id);M.map.edges=M.map.edges.filter(e=>e.a!==id&&e.b!==id);M.sel=null}}
+  afterMap()};
+ ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();fin(true)}else if(e.key==='Escape')fin(false)};ta.onblur=()=>fin(true)}
+/* AI -> map */
+function layoutTree(data){const nodes=[{id:'root',text:String(data.root||data.title||'Topic')}];const kids={root:[]};const seen=new Set(['root']);
+ for(const n of(data.nodes||[])){const id=String(n.id);if(seen.has(id))continue;seen.add(id);nodes.push({id,text:String(n.text||'')});kids[id]=[]}
+ const par={};for(const n of(data.nodes||[]))par[String(n.id)]=String(n.parent??'root');
+ const reach=new Set(['root']),tree={};for(const k in kids)tree[k]=[];
+ let prog=true;const rem=nodes.slice(1);while(prog){prog=false;for(const n of rem){if(reach.has(n.id))continue;const p=par[n.id];if(reach.has(p)&&p!==n.id){tree[p].push(n.id);reach.add(n.id);prog=true}}}
+ for(const n of rem)if(!reach.has(n.id)){tree.root.push(n.id);reach.add(n.id)}
+ const lc={};const leaves=id=>lc[id]||(lc[id]=tree[id].length?tree[id].reduce((s,c)=>s+leaves(c),0):1);const total=leaves('root'),pos={},col={};
+ const place=(id,a0,a1,dep,c)=>{pos[id]={dep,a:(a0+a1)/2,c};let a=a0;for(const ch of tree[id]){const span=(a1-a0)*leaves(ch)/leaves(id);place(ch,a,a+span,dep+1,c);a+=span}};
+ let a=-Math.PI/2;tree.root.forEach((ch,i)=>{const span=2*Math.PI*leaves(ch)/total;place(ch,a,a+span,1,1+i%5);a+=span});
+ const base=Math.max(210,total*14);const out={nodes:[],edges:[]};
+ for(const n of nodes){const p=pos[n.id],r=p?(p.dep===1?base:base+(p.dep-1)*190):0;out.nodes.push({id:n.id,text:n.text,x:p?Math.cos(p.a)*r:0,y:p?Math.sin(p.a)*r:0,c:p?p.c:5,shape:'ellipse',root:!p})}
+ for(const k in tree)for(const c of tree[k])out.edges.push([k,c]);return out}
+function mapFromAI(data,intoCurrent){const L=layoutTree(data),ids={};let ox=0,oy=0,m;
+ if(intoCurrent&&M.map){m=M.map;snap();let mx=-1e9;for(const n of m.nodes)mx=Math.max(mx,n.x);ox=m.nodes.length?mx+520:0}else{m=newMapObj(String(data.title||data.root||'Mind map').slice(0,60));if(S.docId)m.docId=S.docId};
+ for(const n of L.nodes){const id=uid();ids[n.id]=id;m.nodes.push({id,x:n.x+ox,y:n.y+oy,text:n.text,shape:'ellipse',c:n.c,root:n.root})}
+ for(const[a,b]of L.edges)m.edges.push({id:uid(),a:ids[a],b:ids[b]});
+ if(!intoCurrent){S.maps.push(m);S.mapId=m.id;M.map=m;M.hist=[];M.fut=[];M.sel=null}M.view=null;store.put('maps',m);setView('map')}
+function mapOutline(){const m=M.map;if(!m)return'';const t={};m.nodes.forEach(n=>t[n.id]=n.text);return'Bubbles: '+m.nodes.map(n=>n.text).join('; ')+'\nConnections: '+m.edges.map(e=>`${t[e.a]} — ${t[e.b]}`).join('; ')}
+function exportSVG(){const cs=getComputedStyle(document.documentElement),cv=n=>cs.getPropertyValue(n).trim(),r=s=>String(s).replace(/var\((--[\w-]+)\)/g,(_,n)=>cv(n));
+ const clone=$('#world').cloneNode(true);clone.removeAttribute('transform');let h=clone.innerHTML.replace(/<(line|path) data-k="edge"[^>]*>/g,'');h=r(h);h=h.replace(/<text /g,`<text font-family="Inter,Arial,sans-serif" font-size="14" fill="${cv('--ink')}" `);
+ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const n of M.map.nodes){const d=dims(n);x0=Math.min(x0,n.x-d.w);x1=Math.max(x1,n.x+d.w);y0=Math.min(y0,n.y-d.h);y1=Math.max(y1,n.y+d.h)}
+ for(const s of M.map.strokes)for(const p of s.pts){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])}
+ if(x0>x1)return toast('Nothing to export yet.');
+ dl((M.map.title||'mind-map').replace(/[^\w\- ]+/g,'')+'.svg',`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x0-30} ${y0-30} ${x1-x0+60} ${y1-y0+60}"><rect x="${x0-30}" y="${y0-30}" width="${x1-x0+60}" height="${y1-y0+60}" fill="${cv('--surface')}"/>${h}</svg>`)}
+/* ---------- Buddy ---------- */
+const MODES={
+ text:{n:'Stick to the text',d:'Uses only what the text says. Nothing added from outside.',r:'Use only information contained in the material. Do not add facts, examples, definitions, history or context from outside it. If the material does not contain the answer, say so in one sentence. Explaining means restating what the text says more clearly, not adding new information.'},
+ short:{n:'Straight to the point',d:'Fewest possible words. No filler.',r:'Use the fewest words that fully answer. No filler, no repetition, no lead-in sentence. Prefer short fragments. Use outside knowledge only if the material cannot answer, and keep it to a few words.'},
+ balanced:{n:'Clear and complete',d:'Adds outside context only when it is needed, and labels it.',r:'Be clear and complete. Add outside knowledge only when it is needed to understand the material, and put each such addition on its own line starting with "Outside the text:". Never pad.'},
+ deep:{n:'Go deeper',d:'Adds examples and background. Marks what is not from the text.',r:'Be thorough. You may add examples, background and outside knowledge that help understanding. Mark everything that is not from the material by starting that line or section with "Outside the text:".'},
+ teach:{n:'Teach me carefully',d:'Step by step, the way research says people learn best. Adds a labeled example and a check question.',r:'Teach the material the way research says people learn best. Use only the material for facts. 1) Start with the core idea in one plain sentence. 2) Give 2 to 4 short steps, in the order the material gives them, and define each term the first time it appears. 3) Give one concrete everyday example on its own line starting with "Example (outside the text):". 4) If it helps, say how the idea links to something earlier in the material. 5) End with "Check yourself:" and one short question the learner can answer from memory. Do not give that answer unless asked.'},
+ guide:{n:'Guide me',d:'Gives hints and one guiding question instead of the answer, so you do the thinking.',r:'Do not give the answer. Reply with one short hint that points to the relevant part of the material, and at most one guiding question. Give the full answer only if the user asks for it or says they give up.'},
+ custom:{n:'My own rules',d:'Only the rules you write below.',r:'Follow the user\'s own rules below exactly. Where they say nothing, add nothing beyond what was asked.'}};
+const BASE='Do exactly what is asked and nothing more. No greeting, no closing offer, no "hope this helps", no unrequested tips, warnings or related topics. Never ask the user for clarification or for more information; if something is unclear, make the most reasonable assumption and answer. If a selected passage looks cut off, explain what is there. Reply in the language of the request or material.';
+function openBuddy(on=true){S.bopen=on;const b=$('#buddy');b.hidden=!on;if(on)renderBuddy();renderChrome()}
+function renderBuddy(){const b=$('#buddy');if(b.hidden)return;
+ b.innerHTML=`<div class="bh"><div class="bt">${ic('spark')}Buddy<span class="pill" id="modePill">${MODES[S.settings.mode].n}</span></div><button class="ib" data-act="bset" aria-label="Buddy settings">${ic('gear')}</button><button class="ib" data-act="bclose" aria-label="Close">${ic('x')}</button></div>
+ ${S.bset?settingsHtml():`<div id="ctxchip"></div><div id="chat"></div><div id="quick"></div><form id="bform"><textarea id="bin" rows="1" placeholder="Ask for anything: explain, mind map, quiz…" aria-label="Message"></textarea><button class="btn primary" type="submit" aria-label="Send">${ic('send',16)}</button></form>`}`;
+ if(S.bset){$$('input[name=mode]').forEach(r=>r.onchange=()=>{S.settings.mode=r.value;saveSettings();$('#modePill').textContent=MODES[r.value].n});const t=$('#cust');t.oninput=()=>{S.settings.custom=t.value;saveSettings()}}
+ else{renderBuddyCtx();renderChat();const f=$('#bform'),bin=$('#bin');f.onsubmit=e=>{e.preventDefault();const v=bin.value;bin.value='';askBuddy(v)};
+  bin.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();f.requestSubmit()}};bin.oninput=()=>{bin.style.height='auto';bin.style.height=Math.min(120,bin.scrollHeight)+'px'}}}
+const settingsHtml=()=>`<div class="bset"><b>How should your buddy behave?</b>${Object.entries(MODES).map(([k,m])=>`<label class="mode"><input type="radio" name="mode" value="${k}"${S.settings.mode===k?' checked':''}><div><b>${m.n}</b><span>${m.d}</span></div></label>`).join('')}
+ <b>Your own rules</b><span class="muted">Written in your words, sent with every request. Example: "Never add examples. Answer in two lines."</span><textarea id="cust" placeholder="Type how you want your buddy to act…">${esc(S.settings.custom)}</textarea><button class="btn" data-act="bset">Done</button></div>`;
+function ctxInfo(){if(S.sel&&S.sel.text)return{k:'sel',label:'Selected: “'+S.sel.text.slice(0,70).replace(/\s+/g,' ')+(S.sel.text.length>70?'…':'')+'”',clear:true};
+ if(S.view==='learn'&&curPart())return{k:'part',label:'This part: '+curPart().title};if((S.view==='reader'||S.view==='learn')&&curDoc())return{k:'doc',label:'Whole document: '+curDoc().title};
+ if(S.view==='map'&&M.map)return{k:'map',label:'This mind map'};return{k:'none',label:'Nothing open. Just ask.'}}
+function renderBuddyCtx(){const c=$('#ctxchip');if(!c)return;const i=ctxInfo();c.innerHTML=`<span>${esc(i.label)}</span>${i.clear?`<button class="ib" data-act="clearsel" aria-label="Clear selection">${ic('x',14)}</button>`:''}`;
+ const q={sel:[['Explain this','Explain the selected text so I understand it.'],['Mind map','Turn this into a mind map.'],['Quiz me','Quiz me on this.'],['Summarize','Summarize this.'],['Simpler','Say this in simpler words.']],doc:[['Summarize','Summarize this document.'],['Mind map','Make a mind map of this document.'],['Quiz me','Quiz me on this document.']],map:[['Explain this map','Explain this mind map.'],['Quiz me','Quiz me on this mind map.']],none:[]}[i.k]||[['Give me a hint','Give me a hint.'],['Explain this part','Explain this part so I understand it.'],['Why it matters','Why does this part matter in the text?']];
+ const qe=$('#quick');if(qe)qe.innerHTML=q.map(([l,t])=>`<button class="chip" data-act="qa" data-t="${esc(t)}">${l}</button>`).join('')}
+const md=t=>{const out=[];let list=null;for(const l of String(t).split('\n')){const m=l.match(/^\s*(?:[-*•]|\d+\.)\s+(.*)/);if(m){if(!list){list=[];}list.push(`<li>${inline(m[1])}</li>`)}else{if(list){out.push(`<ul>${list.join('')}</ul>`);list=null}if(l.trim())out.push(`<p>${inline(l)}</p>`)}}if(list)out.push(`<ul>${list.join('')}</ul>`);return out.join('')};
+function msgHtml(m){const k=m.role==='user'?'u':m.pending?'p':m.error?'e':'a',enter=m._k!==k;m._k=k;const h=msgHtmlRaw(m);return enter?h.replace('class="msg ','class="msg enter '):h}
+function msgHtmlRaw(m){if(m.role==='user')return`<div class="msg u"><div class="sc">${esc(m.scope)}</div>${esc(m.text)}</div>`;
+ if(m.pending)return`<div class="msg a muted">Thinking<span class="dots"><i></i><i></i><i></i></span> <button class="chip" data-act="stop">Stop</button></div>`;
+ if(m.error)return`<div class="msg a"><span class="st-bad">${esc(m.error)}</span><div class="tools2"><button class="chip" data-act="retry" data-m="${m.id}">Try again</button></div></div>`;
+ const d=m.data;let h='';
+ if(d.type==='mindmap'&&Array.isArray(d.nodes)){const top=d.nodes.filter(n=>String(n.parent??'root')==='root').map(n=>n.text);h=`<b>${esc(d.title||d.root||'Mind map')}</b><p class="muted">${d.nodes.length} bubbles${top.length?': '+esc(top.slice(0,6).join(', ')):''}</p><div class="tools2"><button class="btn sm primary" data-act="mmopen" data-m="${m.id}">${ic('map',15)}Open as mind map</button>${M.map?`<button class="btn sm" data-act="mmadd" data-m="${m.id}">Add to current map</button>`:''}</div>`}
+ else if(d.type==='quiz'&&Array.isArray(d.questions)){m.ans=m.ans||{};let ok=0,n=0;h=(d.title?`<b>${esc(d.title)}</b>`:'')+d.questions.map((q,qi)=>{const a=m.ans[qi];if(a!==undefined){n++;if(a===q.answer)ok++}
+  return`<p><b>${qi+1}. ${inline(q.q)}</b></p>${(q.options||[]).map((o,oi)=>`<button class="qopt${a!==undefined?(oi===q.answer?' good':oi===a?' bad':''):''}" ${a!==undefined?'disabled':''} data-act="qopt" data-m="${m.id}" data-q="${qi}" data-o="${oi}">${inline(o)}</button>`).join('')}${a!==undefined&&q.why?`<p class="muted">${inline(q.why)}</p>`:''}`}).join('')+(n===d.questions.length?`<p><b>Score: ${ok} / ${n}</b></p>`:'')}
+ else if(d.type==='cards'&&Array.isArray(d.cards)){m.flip=m.flip||{};h=d.cards.map((c,i)=>`<button class="fc" data-act="cflip" data-m="${m.id}" data-i="${i}">${m.flip[i]?inline(c.back):'<b>'+inline(c.front)+'</b>'}</button>`).join('')}
+ else h=md(d.text||'')+`<div class="tools2">${m.selText&&!m.full?`<button class="chip primary2" data-act="more" data-m="${m.id}">Explain more fully</button>`:''}<button class="chip" data-act="bcopy" data-m="${m.id}">Copy</button><button class="chip" data-act="bsave" data-m="${m.id}">Save as note</button></div>`;
+ return`<div class="msg a">${h}</div>`}
+function renderChat(){const c=$('#chat');if(!c)return;const nearBottom=c.scrollHeight-c.scrollTop-c.clientHeight<60,st=c.scrollTop;
+ c.innerHTML=S.chat.length?S.chat.map(msgHtml).join(''):`<div class="hint">Select any text in a document and tap Explain, Mind map or Quiz. Or ask for anything. I'll follow the behavior you chose (<b>${MODES[S.settings.mode].n}</b>).</div>`;
+ c.scrollTop=nearBottom?c.scrollHeight:st}
+async function buildCtx(o={}){
+ if(o.full){const d=S.docs.find(z=>z.id===o.docId),flat=((d&&d.text)||'').replace(/\s+/g,' '),key=String(o.selText||'').replace(/\s+/g,' ').slice(0,40),i0=key?flat.indexOf(key):-1;let ctx;
+  if(i0<0)ctx=flat.slice(0,8000);else ctx=flat.slice(Math.max(0,i0-2500),Math.min(flat.length,i0+String(o.selText).length+2500));
+  return{scope:'the selected passage and the text around it. The selection may be incomplete, so use the surrounding text to complete what it leaves out. Do not go beyond this document.',material:'SELECTED PASSAGE:\n'+o.selText+'\n\nSURROUNDING TEXT:\n'+ctx,label:'Selection + surrounding text'}}
+ const i=ctxInfo();
+ if(i.k==='sel')return{scope:'ONLY the selected passage below. Ignore the rest of the document.',material:S.sel.text,label:'Selected text',selText:S.sel.text,docId:S.sel.docId};
+ if(i.k==='part'){const p=curPart();return{scope:'ONLY the part of the document below',material:p.c.text.slice(0,6000),label:'This part'}}
+ if(i.k==='doc'){const d=curDoc();if(d.kind==='image'){const b=await store.get('blobs',d.blobId);return{scope:'the attached image',material:'(see attached image)',label:d.title,image:b&&b.blob}}return{scope:'the whole document',material:(d.text||'').slice(0,60000),label:'Whole document'}}
+ if(i.k==='map')return{scope:'the mind map below',material:mapOutline(),label:'Mind map'};
+ return{scope:'none. Answer the request directly.',material:'',label:'No material'}}
+function buildPrompt(req,x){const m=MODES[S.settings.mode],cust=S.settings.custom.trim();
+ const hist=S.chat.filter(c=>!c.pending&&!c.error).slice(-7,-1).map(c=>c.role==='user'?'User: '+c.text:'Buddy: '+(c.data?(c.data.text||'['+c.data.type+' shown]'):'')).join('\n');
+ return`You are the study buddy inside a study app. The user is working on their own material.
+RULES
+- ${BASE}
+- ${m.r}${cust?`\nUSER'S OWN RULES (highest priority, they override anything above):\n${cust}`:''}
+SCOPE: ${x.scope}
+${x.material?`MATERIAL:\n"""\n${x.material}\n"""\n`:''}${hist?`RECENT CONVERSATION:\n${hist}\n`:''}REQUEST: ${req}
+OUTPUT: Reply with JSON only (no code fences) in exactly one of these shapes, chosen by what the user asked. Mind map request → mindmap. Quiz or test → quiz. Flashcards → cards. Anything else → text.
+{"type":"text","text":"..."}  (plain text; **bold** and lines starting with "- " allowed; no headings unless asked)
+{"type":"mindmap","title":"","root":"central topic","nodes":[{"id":"1","text":"short label","parent":"root"},{"id":"2","text":"...","parent":"1"}]}  (labels up to 6 words, taken from the material; at most 24 nodes)
+{"type":"quiz","title":"","questions":[{"q":"","options":["","","",""],"answer":0,"why":"one short sentence"}]}  (5 multiple-choice questions unless asked otherwise; answerable from the material; "answer" is the index of the correct option)
+{"type":"cards","cards":[{"front":"","back":""}]}`}
+async function askBuddy(req,o={}){req=(req||'').trim();if(!req||S.busy)return;if(!S.bopen)openBuddy();S.bset=false;if($('#buddy').querySelector('.bset'))renderBuddy();
+ const x=await buildCtx(o);S.chat.push({id:uid(),role:'user',text:req,scope:x.label});const m={id:uid(),role:'ai',pending:true,req,opts:o,selText:x.selText,docId:x.docId,full:!!o.full};S.chat.push(m);S.busy=true;S.abort=new AbortController();renderChat();
+ try{const sample=await getSample();if(!sample)throw{code:'unavailable'};const o={cache:false,signal:S.abort.signal};
+  if(x.image){const l=await sample.limits().catch(()=>null);if(l&&l.images)o.images=x.image}
+  const r=await sample(buildPrompt(req,x),o),j=parseJSON(r.text);m.pending=false;m.data=j&&j.type?j:{type:'text',text:(r.text||'').trim()}}
+ catch(e){m.pending=false;if(e&&e.code==='cancelled'){S.chat=S.chat.filter(c=>c!==m&&c!==S.chat[S.chat.indexOf(m)-1])}else m.error=errMsg(e)}
+ S.busy=false;S.abort=null;renderChat()}
+/* ---------- events ---------- */
+const msgById=id=>S.chat.find(c=>c.id===id);
+document.addEventListener('click',async e=>{if(!e.target.closest('#laymenu,#layBtn')){const lm=$('#laymenu');if(lm)lm.hidden=true}const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v,id=b.dataset.id;
+ switch(a){
+ case'nav':if((v==='reader'||v==='learn'||v==='map')&&!curDoc()&&S.docs[0])useDoc(S.docs[0].id);if(v==='map'){const m=S.docId?S.maps.find(x=>x.docId===S.docId):(curMapObj()||S.maps.find(x=>!x.docId));if(m!==M.map){M.hist=[];M.fut=[]}M.map=m||null;S.mapId=m?m.id:null;if(S.view!=='map')M.view=null}S.confirm=null;setView(v);break;
+ case'buddy':openBuddy(!S.bopen);break;case'bclose':openBuddy(false);break;
+ case'bset':S.bset=!S.bset;renderBuddy();break;
+ case'pick':$('#fileIn').click();break;
+ case'scanstart':setView('scan');break;case'cam':$('#camIn').click();break;case'gallery':$('#scanIn').click();break;
+ case'opendoc':useDoc(id);S.sel=null;editing=false;setView(S.view==='learn'||S.view==='map'?S.view:'reader');break;
+ case'deldoc':if(S.confirm!==id){S.confirm=id;render();break}S.confirm=null;S.docs=S.docs.filter(d=>d.id!==id);await store.del('docs',id);if(S.docId===id){S.docId=null;S.chat=[];M.map=null;S.mapId=null}render();break;
+ case'openmap':openMapById(id);break;
+ case'delmap':if(S.confirm!==id){S.confirm=id;render();break}S.confirm=null;S.maps=S.maps.filter(d=>d.id!==id);await store.del('maps',id);if(S.mapId===id){S.mapId=null;M.map=null}render();break;
+ case'newmap':{const d0=curDoc(),m=newMapObj(d0?'Map: '+d0.title.slice(0,50):'Untitled map');if(d0)m.docId=d0.id;S.maps.push(m);await store.put('maps',m);openMapById(m.id);break}
+ case'newnote':{const d={id:uid(),title:'Untitled note',kind:'note',created:Date.now(),html:'<p><br></p>',text:''};S.docs.push(d);await saveDoc(d);useDoc(d.id);editing=true;setView('reader');break}
+ case'edit':{const d=curDoc(),p=$('#paper');if(editing){d.html=p.innerHTML;d.text=plain(d.html);await saveDoc(d)}editing=!editing;viewReader();if(editing)$('#paper').focus();break}
+ case'exptxt':{const d=curDoc();dl((d.title||'document')+'.txt',d.text||plain(d.html));break}
+ case'exphtml':{const d=curDoc();dl((d.title||'document')+'.html',`<!doctype html><meta charset="utf-8"><title>${esc(d.title)}</title><body style="font:17px/1.7 Georgia,serif;max-width:720px;margin:2rem auto;padding:0 1rem">${d.html}</body>`);break}
+ case'orig':openOriginals();break;case'pdf2scan':pdfToScan();break;case'img2scan':imgToScan();break;
+ case'sb':{const t=S.sel;$('#selbar').hidden=true;getSelection().removeAllRanges();if(v==='ask'){openBuddy();setTimeout(()=>$('#bin')&&$('#bin').focus(),50)}else askBuddy({explain:'Explain the selected text so I understand it.',map:'Turn this into a mind map.',quiz:'Quiz me on this.'}[v]);break}
+ case'clearsel':S.sel=null;renderBuddyCtx();break;
+ case'qa':askBuddy(b.dataset.t);break;case'stop':if(S.abort)S.abort.abort();break;
+ case'retry':{const m=msgById(b.dataset.m);S.chat=S.chat.filter(c=>c!==m&&c!==S.chat[S.chat.indexOf(m)-1]);askBuddy(m.req,m.opts||{});break}
+ case'qopt':{const m=msgById(b.dataset.m);m.ans[b.dataset.q]=+b.dataset.o;renderChat();break}
+ case'cflip':{const m=msgById(b.dataset.m);m.flip[b.dataset.i]=!m.flip[b.dataset.i];renderChat();break}
+ case'mmopen':mapFromAI(msgById(b.dataset.m).data,false);if(innerWidth<1000)openBuddy(false);break;
+ case'mmadd':if(M.map){mapFromAI(msgById(b.dataset.m).data,true);if(innerWidth<1000)openBuddy(false)}break;
+ case'bcopy':try{await navigator.clipboard.writeText(msgById(b.dataset.m).data.text);toast('Copied')}catch{toast('Select the text to copy it.')}break;
+ case'bsave':{const t=msgById(b.dataset.m).data.text,d={id:uid(),title:'Buddy note',kind:'note',created:Date.now(),html:textToHtml(t),text:t};S.docs.push(d);await saveDoc(d);toast('Saved to your library as a note.');break}
+ case'pgup':{const i=+b.dataset.i;if(i>0){[SC.pages[i-1],SC.pages[i]]=[SC.pages[i],SC.pages[i-1]];viewScan()}break}
+ case'pgdn':{const i=+b.dataset.i;if(i<SC.pages.length-1){[SC.pages[i+1],SC.pages[i]]=[SC.pages[i],SC.pages[i+1]];viewScan()}break}
+ case'pgdel':SC.pages.splice(+b.dataset.i,1);viewScan();break;
+ case'runscan':runScan();break;
+ case'lbprev':if(LB.n>0){LB.n--;paintLB()}break;case'lbnext':if(LB.n<LB.count-1){LB.n++;paintLB()}break;case'lbclose':$('#lb').hidden=true;break;
+ case'tool':M.tool=v;M.pending=null;M.sel=null;$$('.tool').forEach(t=>t.classList.toggle('on',t.dataset.v===v));mapCtx();drawMap();break;
+ case'mundo':mapUndo();break;case'mredo':mapRedo();break;case'mexp':exportSVG();break;
+ case'zin':zoomBy(1.25);break;case'zout':zoomBy(.8);break;case'zfit':fitMap();break;
+ case'ncolor':{snap();M.map.nodes.find(n=>n.id===M.sel.id).c=+v;afterMap();break}
+ case'nshape':{snap();M.map.nodes.find(n=>n.id===M.sel.id).shape=v;afterMap();break}
+ case'nedit':startEdit(M.sel.id);break;
+ case'nlink':M.tool='connect';M.pending=M.sel.id;M.sel=null;$$('.tool').forEach(t=>t.classList.toggle('on',t.dataset.v==='connect'));mapCtx();drawMap();break;
+ case'ndel':delItem({k:M.sel.type,id:M.sel.id});break;
+ case'pcolor':M.pen=v;mapCtx();break;case'pw':M.pw=+v;mapCtx();break;
+ case'more':{const m=msgById(b.dataset.m);askBuddy('Explain the selected passage more fully.',{full:true,selText:m.selText,docId:m.docId});break}
+ case'fs':S.fs=Math.max(14,Math.min(26,S.fs+(+v)*2));document.documentElement.style.setProperty('--rs',S.fs+'px');try{localStorage.setItem('sd-fs',S.fs)}catch{}break;
+ case'theme':{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches,n=dark?'light':'dark';r.dataset.theme=n;try{localStorage.setItem('sd-theme',n)}catch{}break}
+ case'laymenu':{const lm=$('#laymenu');renderLayMenu();lm.hidden=!lm.hidden;break}
+ case'setlay':setLayout(v);break;
+ default:await extraAct2(a,b,v,id)}});
+$('#fileIn').onchange=e=>{importFiles([...e.target.files]);e.target.value=''};
+$('#scanIn').onchange=e=>{addPhotos([...e.target.files]);e.target.value=''};
+$('#camIn').onchange=e=>{addPhotos([...e.target.files]);e.target.value=''};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('#lb').hidden=true}
+ if(S.view==='map'&&!M.edTa&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?mapRedo():mapUndo()}
+ if(S.view==='map'&&!M.edTa&&M.sel&&(e.key==='Delete'||e.key==='Backspace')&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){delItem({k:M.sel.type,id:M.sel.id})}});
+/* ---------- v4: per-file state, organized reader, review ---------- */
+const INT=[1,3,7,14,30,60],DAY=864e5;
+function useDoc(id){if(!id||S.docId===id)return;S.docId=id;S.sel=null;editing=false;S.chats=S.chats||{};S.chat=S.chats[id]||(S.chats[id]=[]);
+ const m=S.maps.find(x=>x.docId===id);M.map=m||null;S.mapId=m?m.id:null;M.hist=[];M.fut=[];M.sel=null;M.pending=null;M.view=null}
+const ago=t=>{const d=Math.round((Date.now()-t)/DAY);return d<1?'today':d===1?'yesterday':d+' days ago'};
+function reviewBadge(d){const r=d.review;if(!r||!r.due)return'';if(r.due<=Date.now())return'<span class="badge due">Review due</span>';return`<span class="badge">Review in ${Math.ceil((r.due-Date.now())/DAY)}d</span>`}
+async function markStudied(d){const r=d.review=d.review||{stage:0,log:[]};r.stage++;r.log.push(Date.now());r.due=Date.now()+INT[Math.min(r.stage-1,INT.length-1)]*DAY;await saveDoc(d);toast('Logged. Next review in '+INT[Math.min(r.stage-1,INT.length-1)]+' day'+(INT[Math.min(r.stage-1,INT.length-1)]>1?'s':'')+'.')}
+/* parse a document into ordered units (headings and page breaks stay in place) */
+function parseDoc(d){const c=document.createElement('div');c.innerHTML=d.html||'';
+ for(const n of [...c.childNodes])if(n.nodeType===3){if(n.data.trim()){const p=document.createElement('p');p.textContent=n.data.trim();c.replaceChild(p,n)}else c.removeChild(n)}
+ return c}
+function unitsOf(c){const out=[];let run=null;
+ for(const el of [...c.children]){
+  if(el.classList.contains('pbreak')){run=null;out.push({k:'break',els:[el]});continue}
+  if(/^H[1-3]$/.test(el.tagName)){run=null;out.push({k:'head',els:[el]});continue}
+  if(el.classList.contains('li')){if(run)run.els.push(el);else{run={k:'unit',els:[el],li:true};out.push(run)}}
+  else{run=null;out.push({k:'unit',els:[el]})}}
+ let n=0;for(const u of out)if(u.k==='unit')u.i=n++;return out}
+const unitText=u=>u.els.map(e=>e.textContent).join('\n').trim();
+const sigOf=us=>{const x=us.filter(u=>u.k==='unit');return x.length+':'+x.reduce((s,u)=>s+unitText(u).length,0)};
+const topicsValid=d=>!!(d.topics&&d.topicsSig===sigOf(unitsOf(parseDoc(d))));
+const ORGK=['text','pdf','doc','scan','note'];
+function orgOn(d){return!editing&&(d.view||'org')==='org'&&ORGK.includes(d.kind)&&(d.html||'').trim()&&(d.text||'').trim().length>0}
+function boldTerms(root,terms){for(const term of terms){const t=String(term||'');if(t.length<2)continue;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+ while(n=w.nextNode()){if(n.parentElement.closest('b.term'))continue;const i=n.data.indexOf(t);if(i<0)continue;const mid=n.splitText(i);mid.splitText(t.length);const b=document.createElement('b');b.className='term';mid.parentNode.replaceChild(b,mid);b.append(mid);break}}}
+function leadSentence(el){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);const n=w.nextNode();if(!n)return;const m=n.data.match(/^(\s*[^.!?]{18,}?[.!?])(\s|$)/);if(!m||n.data.length-m[1].length<12)return;
+ const rest=n.splitText(m[1].length),sp=document.createElement('span');sp.className='lead';n.parentNode.replaceChild(sp,n);sp.append(n)}
+function orgHtml(d){const c=parseDoc(d),us=unitsOf(c),ok=d.topics&&d.topicsSig===sigOf(us),T=ok?d.topics:null;let h='';
+ for(const u of us){if(u.k!=='unit'){h+=u.els[0].outerHTML;continue}
+  const t=T&&T[u.i];if(t&&t.terms)for(const el of u.els)boldTerms(el,t.terms);
+  if(!u.li&&u.els[0].tagName==='P')leadSentence(u.els[0]);
+  h+=`<section class="unit${t?'':' nl'}"><div class="topic">${t?esc(t.label):''}</div><div class="ub">${u.els.map(e=>e.outerHTML).join('')}</div></section>`}
+ return h||'<p></p>'}
+function orgBar(d){if(!ORGK.includes(d.kind)||!(d.text||'').trim()||editing)return'';
+ const on=(d.view||'org')==='org';
+ let h=`<span class="seg"><button class="${on?'on':''}" data-act="rview" data-v="org">Organized</button><button class="${on?'':'on'}" data-act="rview" data-v="orig">Original</button></span>`;
+ if(on){if(ORG.busy&&ORG.id===d.id)h+='<span class="muted" style="font-size:13px">Adding topic labels…</span>';else if(!topicsValid(d))h+=`<button class="btn sm" data-act="organize">${ic('spark',15)}Add topics</button>`}
+ return h}
+const ORG={busy:false,id:null};
+function rerenderReader(){const pw=$('.pw'),st=pw?pw.scrollTop:0;viewReader();const p2=$('.pw');if(p2)p2.scrollTop=st}
+function maybeOrganize(d){if(!orgOn(d)||d.orgTried||ORG.busy||topicsValid(d))return;organizeDoc(d,false)}
+const orgPrompt=t=>`Label the paragraphs of a study document.
+Rules:
+- For each numbered paragraph give a short topic label (at most 5 words) in the document's own wording. Add nothing that is not in the document.
+- Also list up to 4 key terms or defined concepts that appear in that paragraph. Copy each exactly as written in the paragraph.
+- Do not reorder, skip, merge or rewrite anything. Lines starting with [heading] are context only.
+DOCUMENT:
+${t}
+Reply with JSON only: {"topics":[{"i":0,"label":"","terms":[""]}]}`;
+async function organizeDoc(d,manual){if(ORG.busy)return;const us=unitsOf(parseDoc(d)),units=us.filter(u=>u.k==='unit');if(!units.length)return;
+ d.orgTried=true;ORG.busy=true;ORG.id=d.id;if(S.view==='reader'&&S.docId===d.id)rerenderReader();
+ let budget=60000;const lines=[];
+ for(const u of us){if(u.k==='head'){lines.push('[heading] '+u.els[0].textContent.trim().slice(0,120));continue}if(u.k!=='unit')continue;if(budget<=0)break;const t=unitText(u).replace(/\s+/g,' ').slice(0,600);budget-=t.length;lines.push(`[${u.i}] ${t}`)}
+ try{const sample=await getSample();if(!sample)throw{code:'unavailable'};
+  const r=await sample(orgPrompt(lines.join('\n')),{modelTier:'default',cache:false}),j=parseJSON(r.text);if(!j||!Array.isArray(j.topics))throw{code:'invalid_json'};
+  const T={};for(const t of j.topics){const i=+t.i;if(!Number.isInteger(i)||i<0||i>=units.length)continue;const label=String(t.label||'').trim().slice(0,48);if(!label)continue;
+   const src=unitText(units[i]);T[i]={label,terms:(Array.isArray(t.terms)?t.terms:[]).map(String).filter(x=>x.length>=2&&x.length<=60&&src.includes(x)).slice(0,4)}}
+  d.topics=T;d.topicsSig=sigOf(us);if(manual)toast('Topic labels added.')}
+ catch(e){if(manual)toast(errMsg(e))}
+ ORG.busy=false;await saveDoc(d);if(S.view==='reader'&&S.docId===d.id&&!editing)rerenderReader()}
+/* ---------- why it works: sources shown in the app ---------- */
+const SRC=[
+ ['Predict first','Guessing before you read, even wrongly, helps you remember the answer afterwards.','Richland, Kornell & Kao (2009), Journal of Experimental Psychology: Applied'],
+ ['Small steps','Short parts, plain words, one idea at a time keep working memory from overloading.','Sweller (1988), Cognitive Science; Rey et al. (2019), segmenting meta-analysis, Educational Psychology Review'],
+ ['Say it in your own words','Explaining an idea to yourself reveals gaps that re-reading hides.','Chi et al. (1994), Cognitive Science'],
+ ['Check from memory','Pulling facts out of memory strengthens them more than re-reading. Rated high utility.','Roediger & Karpicke (2006), Psychological Science; Dunlosky et al. (2013)'],
+ ['Mixed review','Mixing questions from different parts helps you tell similar ideas apart. Strongest evidence is in maths and problem solving.','Rohrer & Taylor (2007), Instructional Science'],
+ ['Spaced reviews','Studying in separate sessions beats cramming. The best gap grows with how long you need to remember.','Cepeda et al. (2006), Psychological Bulletin; Dunlosky et al. (2013)'],
+ ['Examples and visuals','Concrete examples and pictures alongside words help understanding. Examples here are labeled as outside your text.','Weinstein, Madan & Sumeracki (2018), Cognitive Research: Principles and Implications'],
+ ['Draw maps yourself first','Making your own drawing can boost learning, mostly when you have something to base it on and can finish it.','Fiorella & Zhang (2018), Educational Psychology Review'],
+ ['Organized reader','Visible cues like topic labels and bold key terms guide attention and improve learning.','Schneider, Beege, Nebel & Rey (2018), Educational Research Review'],
+ ['No extra information by default','Interesting but unneeded material can reduce learning.','Rey (2012), Educational Research Review'],
+ ['Overview of 10 techniques','Practice testing and spaced practice came out as the most useful; highlighting and re-reading the least.','Dunlosky et al. (2013), Psychological Science in the Public Interest'],['Confidence and surprise','Answers you were sure about but got wrong tend to be corrected best once you see the right answer, so the app asks how sure you are before you answer.','Butterfield & Metcalfe (2001), Journal of Experimental Psychology: Learning, Memory, and Cognition'],['Test before you rely on maps','Drawing a map organizes ideas, but trying to recall from memory worked better than concept mapping in one study. Hide your labels and recall them.','Karpicke & Blunt (2011), Science']];
+function whyHtml(){return`<details class="why"><summary>Why this works (research)</summary><div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">${SRC.map(([t,w,s])=>`<div><b>${esc(t)}</b><br>${esc(w)}<div class="src">${esc(s)}</div></div>`).join('')}<div class="src">Summaries are simplified. Effects vary by subject, learner and how the technique is used.</div><div class="src" style="text-align:center;opacity:.7;margin-top:6px">Made by LPA · © 2026 LPA. All rights reserved.</div></div></details>`}
 
+/* ---------- v4: Learn (lesson, recall, review) ---------- */
+const L={tab:'lesson',err:{},load:new Set(),rtext:{},rbusy:false,recall:null};
+const hasText=d=>d&&(d.text||'').trim().length>20;
+const cidx=q=>Math.max(0,Math.min(q.options.length-1,(+q.answer)||0));
+function lessonChunks(d){const us=unitsOf(parseDoc(d));let cs=[],cur=null;const push=()=>{if(cur&&cur.text.trim())cs.push(cur);cur=null};
+ for(const u of us){if(u.k==='break')continue;
+  if(u.k==='head'){if(cur&&cur.text.length>350)push();const h=u.els[0].textContent.trim();if(!cur)cur={head:h,text:''};else cur.text+='\n'+h+'\n';continue}
+  const t=unitText(u);if(!cur)cur={head:'',text:''};cur.text+=(cur.text?'\n\n':'')+t;if(cur.text.length>=1100)push()}
+ push();while(cs.length>36){const m=[];for(let i=0;i<cs.length;i+=2){const a=cs[i],b=cs[i+1];m.push(b?{head:a.head,text:a.text+'\n\n'+b.text}:a)}cs=m}
+ return cs}
+const chunkSig=cs=>cs.length+':'+cs.reduce((s,c)=>s+c.text.length,0);
+function cardPrompt(ck,i,n){const cust=S.settings.custom.trim();
+ return`You are an expert tutor writing one step of a lesson for a learner studying their own material. ${BASE}
+Use ONLY the PASSAGE for facts. Plain words and short sentences. Define each term the first time you use it.${cust?`\nLearner's own rules (highest priority): ${cust}`:''}
+PASSAGE (part ${i+1} of ${n}${ck.head?', under the heading "'+ck.head+'"':''}):
+"""
+${ck.text.slice(0,2600)}
+"""
+Reply with JSON only:
+{"title":"topic name, up to 6 words, from the passage",
+"pretest":{"q":"a question about the passage's main idea that the learner can try BEFORE reading the explanation, by reasoning","options":["","",""],"answer":0},
+"steps":[{"say":"one short plain sentence","term":"term defined here, or empty"}],
+"example":"one concrete everyday example of the main idea, or empty if the passage already gives one",
+"selfExplain":"a prompt asking the learner to explain the idea in their own words (why or how)",
+"model":"a model answer in 1-2 sentences using only the passage",
+"check":[{"q":"","options":["","","",""],"answer":0,"why":"one short sentence"},{"q":"","options":["","","",""],"answer":0,"why":""}],
+"keyIdea":"the one sentence to remember"}
+Rules: 2 to 4 steps in the passage's order. The 2 check questions must need understanding, not copying. "answer" is the index of the correct option; vary where the correct option sits.`}
+async function ensureCard(d,i){const ls=d.lesson;if(!ls||!ls.ch[i])return;const c=ls.ch[i],key=d.id+':'+i;if(c.card||L.load.has(key))return;
+ L.load.add(key);delete L.err[key];
+ try{const sample=await getSample();if(!sample)throw{code:'unavailable'};const cs=lessonChunks(d);if(!cs[i])throw{code:'invalid_json'};
+  const r=await sample(cardPrompt(cs[i],i,cs.length),{modelTier:'default',cache:false}),j=parseJSON(r.text);
+  const ok=j&&j.pretest&&Array.isArray(j.pretest.options)&&j.pretest.options.length>=2&&Array.isArray(j.steps)&&j.steps.length&&Array.isArray(j.check)&&j.check.length&&j.check.every(q=>q&&Array.isArray(q.options)&&q.options.length>=2);
+  if(!ok)throw{code:'invalid_json'};c.card=j;await saveDoc(d)}
+ catch(e){L.err[key]=errMsg(e)}
+ L.load.delete(key);if(S.view==='learn'&&S.docId===d.id&&L.tab==='lesson')viewLearn()}
+const emptyLearn=m=>`<div class="lcard"><p>${esc(m)}</p><div class="acts"><button class="btn primary" data-act="nav" data-v="library">Go to library</button></div></div>`;
+function viewLearn(){const d=curDoc();
+ const seg=`<span class="seg">${[['lesson','Lesson'],['recall','Recall'],['review','Progress']].map(([k,l])=>`<button class="${L.tab===k?'on':''}" data-act="ltab" data-v="${k}">${l}</button>`).join('')}</span>`;
+ const head=`<div class="rbar"><button class="btn sm" data-act="nav" data-v="library">${ic('back',15)}Library</button><h3 style="flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d?esc(d.title):'Learn'}</h3>${seg}</div>`;
+ let body;if(!d)body=emptyLearn('Open a file first. Learn works on whichever file is open.');
+ else if(!hasText(d))body=emptyLearn('This file has no readable text yet. Turn it into a document first (Scan pages, or Convert on a PDF or image).');
+ else body=L.tab==='lesson'?lessonHtml(d):L.tab==='recall'?recallHtml(d):reviewHtml(d);
+ const keep=$('.learn')?$('.learn').scrollTop:0;
+ main.innerHTML=`<div class="learn">${head}${body}${whyHtml()}</div>`;
+ if(d&&L.tab==='lesson'&&d.lesson&&d.lesson.phase==='chunk'&&hasText(d)){const i=d.lesson.idx,c=d.lesson.ch[i];if(c&&!c.card&&!L.load.has(d.id+':'+i)&&!L.err[d.id+':'+i])ensureCard(d,i)}}
+function lessonHtml(d){const cs=lessonChunks(d),sg=chunkSig(cs),ls=d.lesson;
+ if(!ls||ls.sig!==sg)return`<div class="lcard"><h3>${ls?'This file changed since your last lesson':'Learn this file step by step'}</h3>
+  <p class="muted">The lesson follows your file in its original order, in ${cs.length} short part${cs.length>1?'s':''}. Each part works like this:</p>
+  <ol class="lsteps"><li><b>Predict.</b> Take a quick guess before reading.</li><li><b>Learn.</b> A short, plain explanation of only that part.</li><li><b>Explain.</b> Say it in your own words.</li><li><b>Check.</b> Two questions from memory, saying how sure you are.</li><li><b>Apply.</b> Use the idea in a new situation.</li></ol>
+  <p class="muted">Then a mixed review round, and a progress view that shows what is solid and what needs work.</p>
+  <div class="acts"><button class="btn primary" data-act="lstart">${ls?'Start a new lesson':'Start lesson'}</button></div></div>`;
+ if(ls.phase==='done')return doneHtml(d,ls);
+ if(ls.phase==='review')return revRoundHtml(d,ls);
+ return chunkHtml(d,ls,cs)}
+function chunkHtml(d,ls,cs){const i=ls.idx,n=ls.ch.length,c=ls.ch[i],key=d.id+':'+i;
+ const top=`<div class="pbar"><i style="width:${Math.round((i+c.step/4)/n*100)}%"></i></div><div class="muted" style="font-size:13px">Part ${i+1} of ${n}</div><div class="steps">${['Predict','Learn','Explain','Check'].map((t,k)=>`<span class="stp ${k===c.step?'on':k<c.step?'done':''}">${t}</span>`).join('')}</div>`;
+ if(!c.card)return top+`<div class="lcard">${L.err[key]?`<span class="st-bad">${esc(L.err[key])}</span><div class="acts"><button class="btn" data-act="lretry">Try again</button></div>`:'<span class="muted">Preparing this part<span class="dots"><i></i><i></i><i></i></span></span>'}</div>`;
+ const k=c.card;let h='';
+ if(c.step===0){const p=k.pretest;h=`<h3>Take a guess first</h3><p class="muted">You haven't read this part yet. A wrong guess is fine. Trying first helps you remember it better.</p><p><b>${inline(p.q)}</b></p>`
+  +p.options.map((o,oi)=>`<button class="qopt${c.pre===oi?' good':''}" data-act="lpre" data-o="${oi}">${inline(o)}</button>`).join('')
+  +`<div class="acts"><button class="btn primary" data-act="lgo" ${c.pre==null?'disabled':''}>Show me the explanation</button></div>`}
+ else if(c.step===1){const p=k.pretest,pc=cidx(p);
+  h=`<h3>${inline(k.title||'')}</h3>${c.pre!=null?`<p class="muted">You guessed: <b>${inline(p.options[c.pre]||'')}</b>. The text points to: <b>${inline(p.options[pc])}</b>.</p>`:''}
+  <ol class="lsteps">${k.steps.map(s=>`<li>${inline(s.say||'')}${s.term?` <span class="badge">${esc(s.term)}</span>`:''}</li>`).join('')}</ol>
+  ${k.example?`<div class="exbox"><b>Example (outside your text)</b><br>${inline(k.example)}</div>`:''}
+  <details><summary>Original text of this part</summary><div style="margin-top:8px;font:15px/1.7 var(--read)">${textToHtml(cs[i]?cs[i].text:'')}</div></details>
+  <div class="acts"><button class="btn primary" data-act="lgo">Next: explain it yourself</button></div>`}
+ else if(c.step===2){h=`<h3>Say it in your own words</h3><p><b>${inline(k.selfExplain||'Explain the main idea in your own words.')}</b></p><textarea id="selfIn" placeholder="Write it without looking back…">${esc(c.self||'')}</textarea>`
+  +(c.rev?`<div class="exbox"><b>Model answer</b><br>${inline(k.model||'')}</div><p class="muted">How close was yours?</p><div class="acts">${[['got','Got it'],['part','Partly'],['no','Not yet']].map(([v,l])=>`<button class="chip${c.rate===v?' on':''}" data-act="lrate" data-v="${v}">${l}</button>`).join('')}</div>`:`<div class="acts"><button class="btn primary" data-act="lreveal">Show model answer</button></div>`)
+  +(c.rate?`<div class="acts"><button class="btn primary" data-act="lgo">Next: quick check</button></div>`:'')}
+ else{const qs=k.check;h=`<h3>Quick check</h3><p class="muted">Answer from memory.</p>`+qs.map((q,qi)=>{const a=c.ans[qi],ci=cidx(q);return`<p><b>${qi+1}. ${inline(q.q||'')}</b></p>`+q.options.map((o,oi)=>`<button class="qopt${a!=null?(oi===ci?' good':oi===a?' bad':''):''}" ${a!=null?'disabled':''} data-act="lchk" data-q="${qi}" data-o="${oi}">${inline(o)}</button>`).join('')+(a!=null&&q.why?`<p class="muted">${inline(q.why)}</p>`:'')}).join('');
+  if(qs.every((q,qi)=>c.ans[qi]!=null)){const ok=qs.filter((q,qi)=>c.ans[qi]===cidx(q)).length;h+=`<div class="exbox"><b>${ok} of ${qs.length} correct.</b> Key idea: ${inline(k.keyIdea||'')}</div><div class="acts"><button class="btn primary" data-act="lnext">${i+1<n?'Next part':'Start mixed review'}</button></div>`}}
+ return top+`<div class="lcard">${h}</div>`}
+function startReview(d){const ls=d.lesson,pool=[];
+ ls.ch.forEach(c=>{if(!c.card)return;const w=c.rate==='no'?3:c.rate==='part'?2:1;for(const q of c.card.check)pool.push({q:q.q,options:q.options,answer:cidx(q),why:q.why,w})});
+ const items=[];while(items.length<6&&pool.length){const tot=pool.reduce((s,p)=>s+p.w,0);let r=Math.random()*tot,k=0;for(;k<pool.length-1;k++){r-=pool[k].w;if(r<=0)break}items.push(pool.splice(k,1)[0])}
+ if(!items.length){ls.phase='done';return}ls.phase='review';ls.rev={items,i:0,ans:[]}}
+function revRoundHtml(d,ls){const r=ls.rev,q=r.items[r.i],a=r.ans[r.i],n=r.items.length;
+ return`<div class="pbar"><i style="width:${Math.round(r.i/n*100)}%"></i></div><div class="muted" style="font-size:13px">Mixed review, question ${r.i+1} of ${n}. Questions from different parts are shuffled on purpose.</div>
+ <div class="lcard"><p><b>${inline(q.q||'')}</b></p>${q.options.map((o,oi)=>`<button class="qopt${a!=null?(oi===q.answer?' good':oi===a?' bad':''):''}" ${a!=null?'disabled':''} data-act="lrev" data-o="${oi}">${inline(o)}</button>`).join('')}${a!=null&&q.why?`<p class="muted">${inline(q.why)}</p>`:''}
+ ${a!=null?`<div class="acts"><button class="btn primary" data-act="lrevnext">${r.i+1<n?'Next question':'Finish'}</button></div>`:''}</div>`}
+function doneHtml(d,ls){const all=[];ls.ch.forEach(c=>c.card&&c.card.check.forEach((q,qi)=>all.push(c.ans[qi]===cidx(q))));const r=ls.rev,ok=all.filter(Boolean).length,rok=r?r.items.filter((q,i)=>r.ans[i]===q.answer).length:0;
+ return`<div class="lcard"><h3>Lesson complete</h3><p>Part checks: <b>${ok} of ${all.length}</b>${r?` · Mixed review: <b>${rok} of ${r.items.length}</b>`:''}</p>
+ <div><b>Key ideas, in your file's order</b><ol class="lsteps" style="margin-top:6px">${ls.ch.map(c=>c.card?`<li><b>${inline(c.card.title||'')}.</b> ${inline(c.card.keyIdea||'')}</li>`:'').join('')}</ol></div>
+ <p class="muted">Next: write what you remember without looking, then schedule your next review.</p>
+ <div class="acts"><button class="btn primary" data-act="ltab" data-v="recall">Try Recall</button><button class="btn" data-act="rlog">Count as today's study session</button><button class="btn" data-act="lstart">Restart lesson</button></div></div>`}
+
+/* ---------- v4: recall, review plan, map helpers, actions ---------- */
+const arr=x=>Array.isArray(x)?x:[];
+const recallPrompt=(d,t)=>`A learner closed their study material and wrote down everything they remember. Compare it with the material.
+Rules: use only the material. Do not add facts. Judge meaning, not exact wording.
+MATERIAL:
+"""
+${(d.text||'').slice(0,60000)}
+"""
+LEARNER'S RECALL:
+"""
+${t.slice(0,8000)}
+"""
+Reply with JSON only: {"covered":["important point the learner remembered correctly (short)"],"missed":[{"point":"important point they left out (short)","from":"short exact quote from the material"}],"wrong":[{"said":"what the learner wrote","correct":"what the material says"}]}
+Include at most 12 covered, 12 missed and 6 wrong, and only the important points of the material.`;
+function recallHtml(d){const r=d.recall,res=L.recall&&L.recall.id===d.id?L.recall:null;
+ let h=`<div class="lcard"><h3>Blank-page recall</h3><p class="muted">Close the file in your mind and write everything you remember about it. Mistakes are fine. Pulling it out of memory is what makes it stick.</p>
+ <textarea id="recallIn" placeholder="Write what you remember…">${esc(L.rtext[d.id]||'')}</textarea>
+ <div class="acts"><button class="btn primary" data-act="rcheck" ${L.rbusy?'disabled':''}>${L.rbusy?'Checking…':'Check my recall'}</button></div>
+ ${r?`<p class="muted">Last time: you remembered ${r.c} of ${r.c+r.m} main points (${ago(r.ts)}).</p>`:''}</div>`;
+ if(res)h+=recallResult(d,res);return h}
+function recallResult(d,r){const c=r.covered.length,m=r.missed.length,tot=Math.max(1,c+m);
+ return`<div class="lcard res"><h3>You remembered ${c} of ${c+m} main points</h3><div class="cov"><i style="width:${Math.round(c/tot*100)}%"></i></div>
+ ${c?`<div><b>Remembered</b><ul>${r.covered.map(x=>`<li>${inline(String(x))}</li>`).join('')}</ul></div>`:''}
+ ${m?`<div><b>Left out</b><ul>${r.missed.map(x=>`<li>${inline(String(x.point||x))}${x.from?`<div class="src">From your file: “${esc(String(x.from))}”</div>`:''}</li>`).join('')}</ul></div>`:''}
+ ${r.wrong.length?`<div><b>Check these</b><ul>${r.wrong.map(x=>`<li>You wrote: ${inline(String(x.said||''))}<br>Your file says: ${inline(String(x.correct||''))}</li>`).join('')}</ul></div>`:''}
+ <div class="acts"><button class="btn primary" data-act="rclear">Try again from memory</button><button class="btn" data-act="gotoreader">Open the file</button><button class="btn" data-act="rlog">Count as today's study session</button></div></div>`}
+async function checkRecall(d){const t=(L.rtext[d.id]||'').trim();if(t.length<15)return toast('Write a little more first.');
+ L.rbusy=true;viewLearn();
+ try{const sample=await getSample();if(!sample)throw{code:'unavailable'};const r=await sample(recallPrompt(d,t),{modelTier:'default',cache:false}),j=parseJSON(r.text);if(!j)throw{code:'invalid_json'};
+  const res={id:d.id,covered:arr(j.covered),missed:arr(j.missed),wrong:arr(j.wrong)};L.recall=res;d.recall={ts:Date.now(),c:res.covered.length,m:res.missed.length};await saveDoc(d)}
+ catch(e){toast(errMsg(e))}
+ L.rbusy=false;if(S.view==='learn'&&S.docId===d.id)viewLearn()}
+function reviewHtml(d){const r=d.review,st=r?r.stage:0,due=r&&r.due;
+ const labels=['Study today',...INT.map(n=>'+'+n+(n>1?' days':' day'))];
+ return`<div class="lcard"><h3>Review plan</h3><p class="muted">Short reviews spread over days beat one long session. Do a Lesson or a Recall, then log it here. The gaps grow each time.</p>
+ <div class="sched">${labels.map((l,i)=>`<div class="sd ${i<st?'done':i===st?'now':''}">${l}</div>`).join('')}</div>
+ <p>${!r?'No sessions logged yet.':due<=Date.now()?'<b>A review is due now.</b>':`Next review: <b>${new Date(due).toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})}</b>.`}${r&&r.log.length?` Sessions logged: ${r.log.length}.`:''}</p>
+ <div class="acts"><button class="btn primary" data-act="rlog">I studied this today</button>${r?`<button class="btn danger" data-act="rreset">Reset plan</button>`:''}</div></div>`}
+/* map: empty start and AI drawing */
+function mapEmpty(){const w=$('#mapwrap');if(!w)return;let e=$('#mapEmpty');const m=M.map,empty=m&&!m.nodes.length&&!m.strokes.length&&!(M.dis&&M.dis[m.id]);
+ if(!empty){if(e)e.remove();return}
+ if(!e){e=document.createElement('div');e.id='mapEmpty';w.append(e)}
+ e.innerHTML=`<div class="mecard"><h3>Start your map</h3><p class="muted">Drawing it yourself helps you remember it. Add a bubble for the main topic, then branch out.</p><button class="btn primary" data-act="mself">${ic('bubble',16)}I'll draw it myself</button><button class="btn" data-act="mai">${ic('spark',16)}Or let AI draw it from this file</button></div>`}
+const mapPrompt=d=>{const cust=S.settings.custom.trim();return`You are building a mind map for a learner. ${BASE}
+- ${MODES[S.settings.mode].r.split(' 3) ')[0]}. Do not add examples.${cust?`\n- Learner's own rules (highest priority): ${cust}`:''}
+MATERIAL:
+"""
+${(d.text||'').slice(0,60000)}
+"""
+TASK: Make a mind map of the whole material. Follow the order in which the material presents its topics. Use labels of up to 6 words taken from the material, at most 30 bubbles and at most 3 levels.
+Reply with JSON only: {"title":"","root":"central topic","nodes":[{"id":"1","text":"","parent":"root"},{"id":"2","text":"","parent":"1"}]}`};
+async function drawWithAI(){const d=curDoc();if(!d||!hasText(d))return toast('Open a file with text first.');if(M.aiBusy)return;
+ M.aiBusy=true;const b=$('#aiB');if(b){b.disabled=true;const s=$('span',b);if(s)s.textContent='Drawing…'}
+ try{const sample=await getSample();if(!sample)throw{code:'unavailable'};const r=await sample(mapPrompt(d),{modelTier:'default',cache:false}),j=parseJSON(r.text);
+  if(!j||!Array.isArray(j.nodes)||!j.nodes.length)throw{code:'invalid_json'};
+  if(!M.map){viewMap()}M.aiBusy=false;mapFromAI(j,true);return}
+ catch(e){toast(errMsg(e))}
+ M.aiBusy=false;if(S.view==='map')viewMap()}
+/* actions */
+async function extraAct(a,b,v,id){const d=curDoc(),ls=d&&d.lesson,c=ls&&ls.ch&&ls.ch[ls.idx];const sv=()=>d&&saveDoc(d);
+ switch(a){
+ case'rview':d.view=v;sv();rerenderReader();break;
+ case'organize':organizeDoc(d,true);break;
+ case'learndoc':useDoc(id);L.tab='lesson';setView('learn');break;
+ case'ltab':L.tab=v;viewLearn();break;
+ case'lstart':{const cs=lessonChunks(d);d.lesson={sig:chunkSig(cs),idx:0,phase:'chunk',ch:cs.map(()=>({step:0,pre:null,self:'',rate:'',ans:[]})),rev:null};sv();viewLearn();break}
+ case'lpre':c.pre=+b.dataset.o;sv();viewLearn();break;
+ case'lgo':c.step=Math.min(3,c.step+1);sv();viewLearn();if(c.step===3&&ls.idx+1<ls.ch.length)ensureCard(d,ls.idx+1);break;
+ case'lreveal':c.rev=true;sv();viewLearn();break;
+ case'lrate':c.rate=v;sv();viewLearn();break;
+ case'lchk':c.ans[+b.dataset.q]=+b.dataset.o;sv();viewLearn();break;
+ case'lnext':if(ls.idx+1<ls.ch.length)ls.idx++;else startReview(d);sv();viewLearn();break;
+ case'lretry':delete L.err[d.id+':'+ls.idx];viewLearn();break;
+ case'lrev':ls.rev.ans[ls.rev.i]=+b.dataset.o;sv();viewLearn();break;
+ case'lrevnext':if(ls.rev.i+1<ls.rev.items.length)ls.rev.i++;else ls.phase='done';sv();viewLearn();break;
+ case'rcheck':checkRecall(d);break;
+ case'rclear':L.recall=null;L.rtext[d.id]='';viewLearn();break;
+ case'gotoreader':setView('reader');break;
+ case'rlog':await markStudied(d);if(S.view==='learn'){L.tab='review';viewLearn()}break;
+ case'rreset':delete d.review;sv();viewLearn();break;
+ case'mself':M.dis=M.dis||{};if(M.map)M.dis[M.map.id]=true;M.tool='bubble';$$('.tool').forEach(t=>t.classList.toggle('on',t.dataset.v==='bubble'));mapCtx();break;
+ case'mai':drawWithAI();break}}
+document.addEventListener('input',e=>{const d=curDoc();if(!d)return;
+ if(e.target.id==='selfIn'&&d.lesson){const c=d.lesson.ch[d.lesson.idx];if(c){c.self=e.target.value;clearTimeout(L.st);L.st=setTimeout(()=>saveDoc(d),600)}}
+ if(e.target.id==='recallIn')L.rtext[d.id]=e.target.value});
+
+/* ---------- v5: understanding model (evidence, not "marked done") ---------- */
+const CSC=new WeakMap(),GRID=16;
+const hashOf=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return(h>>>0).toString(36)};
+const TW={check:1,apply:1.5,rev:1.2,recall:1.5,explain:.6},RETK=new Set(['check','apply','rev','recall']);
+const STL={none:'Not tested',early:'Just started',dev:'Building',solid:'Solid',shaky:'Needs work'};
+async function askJSON(prompt,valid,opts={}){const sample=await getSample();if(!sample)throw{code:'unavailable'};let last;
+ for(let t=0;t<2;t++){try{const r=await sample(t?prompt+'\n\nYour previous reply was not valid JSON in this format. Reply with valid JSON only.':prompt,{modelTier:'default',cache:false,...opts});const j=parseJSON(r.text);if(j&&valid(j))return j;last={code:'invalid_json'}}
+  catch(e){last=e;if(!e||!['invalid_json','upstream_error','empty_completion'].includes(e.code))throw e}}
+ throw last}
+function lessonChunks(d){const hit=CSC.get(d);if(hit&&hit.k===d.html)return hit.cs;
+ const us=unitsOf(parseDoc(d));let cs=[],cur=null;const push=()=>{if(cur&&cur.text.trim())cs.push(cur);cur=null};
+ us.forEach((u,k)=>{if(u.k==='break')return;
+  if(u.k==='head'){if(cur&&cur.text.length>350)push();const h=u.els[0].textContent.trim();if(!cur)cur={head:h,text:'',ui0:k};else cur.text+='\n'+h+'\n';return}
+  const t=unitText(u);if(!cur)cur={head:'',text:'',ui0:k};cur.text+=(cur.text?'\n\n':'')+t;if(cur.text.length>=1100)push()});
+ push();while(cs.length>36){const m=[];for(let i=0;i<cs.length;i+=2){const a=cs[i],b=cs[i+1];m.push(b?{head:a.head,text:a.text+'\n\n'+b.text,ui0:a.ui0}:a)}cs=m}
+ cs.forEach(c=>c.h=hashOf(c.text));CSC.set(d,{k:d.html,cs});return cs}
+function secOf(d,h){d.ev=d.ev||{};return d.ev[h]||(d.ev[h]={ev:[],iv:0,due:0})}
+function logEv(d,h,k,s,c){if(!d||!h)return;const e=secOf(d,h);e.ev.push({t:Date.now(),k,s,c:c||''});if(e.ev.length>40)e.ev.shift();
+ if(RETK.has(k)){if(s>=.8){e.iv=INT.find(x=>x>e.iv)||60;e.due=Date.now()+e.iv*DAY}else if(s>=.5){e.iv=Math.max(1,e.iv);e.due=Date.now()+e.iv*DAY}else{e.iv=1;e.due=Date.now()}}
+ saveDoc(d)}
+function sState(e){const ev=((e&&e.ev)||[]).filter(x=>TW[x.k]);if(!ev.length)return{st:'none',score:0,n:0,hce:false};
+ const now=Date.now();let a=0,b=0;for(const x of ev){const w=TW[x.k]*Math.pow(.5,(now-x.t)/DAY/14);a+=w*x.s;b+=w}const score=a/b;
+ const hce=ev.some(x=>x.c==='s'&&x.s===0&&now-x.t<14*DAY),n=ev.filter(x=>RETK.has(x.k)).length;
+ return{st:n<1?'early':(hce||score<.5)?'shaky':(score>=.8&&n>=2)?'solid':'dev',score,n,hce}}
+function secs(d){const cs=lessonChunks(d),ls=d.lesson&&d.lesson.sig===chunkSig(cs)?d.lesson:null;
+ return cs.map((c,i)=>{const e=d.ev&&d.ev[c.h],s=sState(e),ct=ls&&ls.ch[i]&&ls.ch[i].card&&ls.ch[i].card.title;
+  return{i,c,e,...s,due:!!(e&&e.due&&e.due<=Date.now()),last:e&&e.ev.length?e.ev[e.ev.length-1].t:0,title:ct||c.head||(c.text.split(/\s+/).slice(0,6).join(' ')+'…')}})}
+function attention(d){const out=[];for(const s of secs(d)){let p=0,why='';
+ if(s.hce){p=100;why='You felt sure, but the answer was different. Worth a second look.'}
+ else if(s.st==='shaky'){p=80+(1-s.score)*10;why='Your recent answers show this is not solid yet.'}
+ else if(s.due&&s.st!=='none'){p=60;why='Time to recall this again so it stays.'}
+ else if(s.st==='none'){p=40-s.i*.1;why='Not tested yet.'}
+ else if(s.st==='early'){p=30;why='You have only just started this part.'}
+ else if(s.st==='dev'){p=25;why='Getting there. One more successful recall will help.'}
+ if(p)out.push({...s,p,why})}
+ return out.sort((a,b)=>b.p-a.p)}
+function calibration(d){const ev=[];for(const e of Object.values(d.ev||{}))for(const x of e.ev)if(x.c&&x.k==='check')ev.push(x);
+ const g=c=>{const a=ev.filter(x=>x.c===c);return{n:a.length,ok:a.filter(x=>x.s>=.8).length}};return{s:g('s'),u:g('u'),g:g('g')}}
+function applyCoverage(d,cov,mis){const cs=lessonChunks(d),norm=x=>String(x||'').replace(/\s+/g,' ').toLowerCase(),tl=cs.map(c=>norm(c.text)),tally={};
+ const find=q=>{const k=norm(q).slice(0,40);return k.length<8?-1:tl.findIndex(t=>t.includes(k))};
+ for(const[list,good]of[[cov,1],[mis,0]])for(const x of list){const i=find(x&&x.from);if(i<0)continue;const t=tally[i]=tally[i]||{y:0,n:0};t[good?'y':'n']++}
+ for(const i in tally){const t=tally[i];logEv(d,cs[i].h,'recall',t.y/(t.y+t.n))}}
+const partRows=ss=>ss.map(s=>`<div class="prow"><span class="pill u-${s.st}">${STL[s.st]}</span><span class="pt"><b>Part ${s.i+1}</b> ${esc(s.title)}</span><button class="chip" data-act="testpart" data-i="${s.i}">Test</button></div>`).join('');
+function reviewBadge(d){if(!d.ev)return'';const ss=secs(d),tested=ss.filter(s=>s.st!=='none').length;if(!tested)return'';
+ const due=ss.filter(s=>s.due&&s.st!=='none').length,solid=ss.filter(s=>s.st==='solid').length;
+ return`<span class="badge${due?' due':''}">${due?due+' to review':solid+'/'+ss.length+' solid'}</span>`}
+function nextUpHtml(){let best=null;for(const d of S.docs){if(!hasText(d)||!d.ev)continue;const a=attention(d)[0];if(a&&a.p>=60&&(!best||a.p>best.a.p))best={d,a}}
+ if(best)return`<div class="lcard nextup"><div><b>Next up: ${esc(best.d.title)}</b><br><span class="muted">Part ${best.a.i+1}, ${esc(best.a.title)}. ${esc(best.a.why)}</span></div><button class="btn primary" data-act="testdoc" data-id="${best.d.id}" data-i="${best.a.i}">Test myself</button></div>`;
+ const d=[...S.docs].filter(hasText).sort((x,y)=>y.created-x.created)[0];if(!d||(d.ev&&Object.keys(d.ev).length))return'';
+ return`<div class="lcard nextup"><div><b>Next up</b><br><span class="muted">Learn “${esc(d.title)}” and find out what you already know.</span></div><button class="btn primary" data-act="learndoc" data-id="${d.id}">Start</button></div>`}
+function curPart(){const d=curDoc();if(!d||!d.lesson||d.lesson.phase!=='chunk')return null;const cs=lessonChunks(d),i=d.lesson.idx,c=cs[i];if(!c)return null;const ch=d.lesson.ch[i];return{c,i,title:(ch&&ch.card&&ch.card.title)||c.head||c.text.split(/\s+/).slice(0,5).join(' ')}}
+function ensureLesson(d,cs){cs=cs||lessonChunks(d);const sg=chunkSig(cs);if(d.lesson&&d.lesson.sig===sg)return;d.lesson={sig:sg,idx:0,phase:'chunk',ch:cs.map(()=>({step:0,pre:null,self:'',rate:'',ans:[]})),rev:null}}
+function testPart(i){const d=curDoc();if(!d)return;const cs=lessonChunks(d);if(!cs[i])return;ensureLesson(d,cs);const ls=d.lesson;ls.phase='chunk';ls.idx=i;const c=ls.ch[i];c.step=3;c.conf=[];c.ans=[];c.ap=null;c.testFirst=true;saveDoc(d);L.tab='lesson';setView('learn')}
+/* ---------- reader <-> learn: parts, status, cover and recall ---------- */
+function orgHtml(d){const c=parseDoc(d),us=unitsOf(c),ok=d.topics&&d.topicsSig===sigOf(us),T=ok?d.topics:null,cs=lessonChunks(d),ss=secs(d),startAt={};
+ cs.forEach((x,i)=>{startAt[x.ui0]=i});let ci=-1;us.forEach((u,k)=>{if(startAt[k]!==undefined)ci=startAt[k];u.ci=ci});
+ const tested=ss.filter(s=>s.st!=='none').length,solid=ss.filter(s=>s.st==='solid').length,nx=attention(d)[0];
+ let h=`<div class="ustrip"><div class="ubar">${ss.map(s=>`<i class="u-${s.st}" title="Part ${s.i+1}: ${STL[s.st]}"></i>`).join('')}</div><span>${tested?solid+' of '+ss.length+' parts solid':'Read a part, then test yourself.'}</span>${nx?`<button class="chip primary2" data-act="testpart" data-i="${nx.i}">${tested?'Next: Part '+(nx.i+1):'Test myself'}</button>`:''}</div>`;
+ const cover=!!d.cover&&!!T;
+ us.forEach((u,k)=>{
+  if(startAt[k]!==undefined){const s=ss[startAt[k]];h+=`<div class="cbar" data-ci="${s.i}"><span class="pill u-${s.st}">Part ${s.i+1} · ${STL[s.st]}</span><button class="chip" data-act="testpart" data-i="${s.i}">Test myself</button></div>`}
+  if(u.k!=='unit'){h+=u.els[0].outerHTML;return}
+  const t=T&&T[u.i];if(t&&t.terms)for(const el of u.els)boldTerms(el,t.terms);
+  if(!u.li&&u.els[0].tagName==='P')leadSentence(u.els[0]);
+  h+=`<section class="unit${t?'':' nl'}"${cover?' data-act="unitopen"':''}><div class="topic">${t?esc(t.label):''}</div><div class="ub">${u.els.map(e=>e.outerHTML).join('')}</div></section>`});
+ return h}
+function orgBar(d){if(!ORGK.includes(d.kind)||!(d.text||'').trim()||editing)return'';
+ const on=(d.view||'org')==='org',tv=on&&topicsValid(d);
+ let h=`<span class="seg"><button class="${on?'on':''}" data-act="rview" data-v="org">Organized</button><button class="${on?'':'on'}" data-act="rview" data-v="orig">Original</button></span>`;
+ if(on){if(ORG.busy&&ORG.id===d.id)h+='<span class="muted" style="font-size:13px">Adding topic labels…</span>';else if(!tv)h+=`<button class="btn sm" data-act="organize">${ic('spark',15)}Add topics</button>`;
+  else h+=`<button class="btn sm${d.cover?' primary':''}" data-act="cover" title="Blurs the text. Read each topic, try to recall it, then tap to check.">${d.cover?'Cover mode on':'Cover and recall'}</button>`}
+ return h}
+/* ---------- learn: predict, learn, explain, check (with confidence), apply ---------- */
+function cardPrompt(ck,i,n){const cust=S.settings.custom.trim();
+ return`You are an expert tutor writing one step of a lesson for a learner studying their own material. ${BASE}
+Use ONLY the PASSAGE for facts. Plain words and short sentences. Define each term the first time you use it.${cust?`\nLearner's own rules (highest priority): ${cust}`:''}
+PASSAGE (part ${i+1} of ${n}${ck.head?', under the heading "'+ck.head+'"':''}):
+"""
+${ck.text.slice(0,2600)}
+"""
+Reply with JSON only:
+{"title":"topic name, up to 6 words, from the passage",
+"pretest":{"q":"a question about the passage's main idea that the learner can try BEFORE reading the explanation, by reasoning","options":["","",""],"answer":0},
+"steps":[{"say":"one short plain sentence","term":"term defined here, or empty"}],
+"example":"one concrete everyday example of the main idea, or empty if the passage already gives one",
+"selfExplain":"a prompt asking the learner to explain the idea in their own words (why or how)",
+"model":"a model answer in 1-2 sentences using only the passage",
+"check":[{"q":"","options":["","","",""],"answer":0,"why":"one short sentence"},{"q":"","options":["","","",""],"answer":0,"why":""}],
+"apply":{"q":"a short problem or scenario that needs the idea applied to a NEW situation not described in the passage","model":"a model answer, 1-3 sentences, reasoning only from the passage"},
+"keyIdea":"the one sentence to remember"}
+Rules: 2 to 4 steps in the passage's order. The 2 check questions must need understanding, not copying. "answer" is the index of the correct option; vary where the correct option sits.`}
+async function ensureCard(d,i){const ls=d.lesson;if(!ls||!ls.ch[i])return;const c=ls.ch[i],key=d.id+':'+i;if(c.card||L.load.has(key))return;
+ L.load.add(key);delete L.err[key];
+ try{const cs=lessonChunks(d);if(!cs[i])throw{code:'invalid_json'};
+  c.card=await askJSON(cardPrompt(cs[i],i,cs.length),j=>j&&j.pretest&&Array.isArray(j.pretest.options)&&j.pretest.options.length>=2&&Array.isArray(j.steps)&&j.steps.length&&Array.isArray(j.check)&&j.check.length&&j.check.every(q=>q&&Array.isArray(q.options)&&q.options.length>=2));await saveDoc(d)}
+ catch(e){L.err[key]=errMsg(e)}
+ L.load.delete(key);if(S.view==='learn'&&S.docId===d.id&&L.tab==='lesson')viewLearn()}
+function chunkHtml(d,ls,cs){const i=ls.idx,n=ls.ch.length,c=ls.ch[i],key=d.id+':'+i;
+ const top=`<div class="pbar"><i style="width:${Math.round((i+Math.min(c.step,4)/5)/n*100)}%"></i></div><div class="muted" style="font-size:13px">Part ${i+1} of ${n}</div><div class="steps">${['Predict','Learn','Explain','Check','Apply'].map((t,k)=>`<span class="stp ${k===c.step?'on':k<c.step?'done':''}">${t}</span>`).join('')}</div>`;
+ if(!c.card)return top+`<div class="lcard">${L.err[key]?`<span class="st-bad">${esc(L.err[key])}</span><div class="acts"><button class="btn" data-act="lretry">Try again</button></div>`:'<span class="muted">Preparing this part<span class="dots"><i></i><i></i><i></i></span></span>'}</div>`;
+ const k=c.card,nextBtn=`<button class="btn primary" data-act="lnext">${i+1<n?'Next part':'Start mixed review'}</button>`;let h='';
+ if(c.step===0){const p=k.pretest;h=`<h3>Take a guess first</h3><p class="muted">You haven't read this part yet. A wrong guess is fine. Trying first helps you remember it better.</p><p><b>${inline(p.q)}</b></p>`
+  +p.options.map((o,oi)=>`<button class="qopt${c.pre===oi?' good':''}" data-act="lpre" data-o="${oi}">${inline(o)}</button>`).join('')
+  +`<div class="acts"><button class="btn primary" data-act="lgo" ${c.pre==null?'disabled':''}>Show me the explanation</button></div>`}
+ else if(c.step===1){const p=k.pretest,pc=cidx(p);
+  h=`<h3>${inline(k.title||'')}</h3>${c.pre!=null?`<p class="muted">You guessed: <b>${inline(p.options[c.pre]||'')}</b>. The text points to: <b>${inline(p.options[pc])}</b>.</p>`:''}
+  <ol class="lsteps">${k.steps.map(s=>`<li>${inline(s.say||'')}${s.term?` <span class="badge">${esc(s.term)}</span>`:''}</li>`).join('')}</ol>
+  ${k.example?`<div class="exbox"><b>Example (outside your text)</b><br>${inline(k.example)}</div>`:''}
+  <details><summary>Original text of this part</summary><div style="margin-top:8px;font:15px/1.7 var(--read)">${textToHtml(cs[i]?cs[i].text:'')}</div></details>
+  <div class="acts"><button class="btn primary" data-act="lgo">Next: explain it yourself</button></div>`}
+ else if(c.step===2){h=`<h3>Say it in your own words</h3><p><b>${inline(k.selfExplain||'Explain the main idea in your own words.')}</b></p><textarea id="selfIn" placeholder="Write it without looking back…">${esc(c.self||'')}</textarea>`
+  +(c.rev?`<div class="exbox"><b>Model answer</b><br>${inline(k.model||'')}</div><p class="muted">How close was yours?</p><div class="acts">${[['got','Got it'],['part','Partly'],['no','Not yet']].map(([v,l])=>`<button class="chip${c.rate===v?' on':''}" data-act="lrate" data-v="${v}">${l}</button>`).join('')}</div>`:`<div class="acts"><button class="btn primary" data-act="lreveal">Show model answer</button></div>`)
+  +(c.rate?`<div class="acts"><button class="btn primary" data-act="lgo">Next: quick check</button></div>`:'')}
+ else if(c.step===3){const qs=k.check;c.conf=c.conf||[];h=`<h3>${c.testFirst?'Test yourself first':'Quick check'}</h3><p class="muted">${c.testFirst?'Try these before looking at the text. ':''}Say how sure you are, then answer from memory.</p>`
+  +qs.map((q,qi)=>{const a=c.ans[qi],cf=c.conf[qi],ci=cidx(q);
+   return`<p><b>${qi+1}. ${inline(q.q||'')}</b></p>`+(a==null?`<div class="acts" style="margin-bottom:4px">${[['s','Sure'],['u','Not sure'],['g','Guess']].map(([v,l])=>`<button class="chip${cf===v?' on':''}" data-act="lconf" data-q="${qi}" data-v="${v}">${l}</button>`).join('')}</div>`:'')
+   +q.options.map((o,oi)=>`<button class="qopt${a!=null?(oi===ci?' good':oi===a?' bad':''):''}" ${(a!=null||!cf)?'disabled':''} data-act="lchk" data-q="${qi}" data-o="${oi}">${inline(o)}</button>`).join('')
+   +(a!=null?`${cf==='s'&&a!==ci?'<p class="st-bad"><b>You felt sure, but this one was different. Worth another look.</b></p>':''}${q.why?`<p class="muted">${inline(q.why)}</p>`:''}`:'')}).join('');
+  if(qs.every((q,qi)=>c.ans[qi]!=null)){const ok=qs.filter((q,qi)=>c.ans[qi]===cidx(q)).length;
+   h+=`<div class="exbox"><b>${ok} of ${qs.length} correct.</b> Key idea: ${inline(k.keyIdea||'')}</div>${c.testFirst?`<details><summary>Read this part now</summary><div style="margin-top:8px;font:15px/1.7 var(--read)">${textToHtml(cs[i]?cs[i].text:'')}</div></details>`:''}<div class="acts">${k.apply?`<button class="btn primary" data-act="lgo">Next: use it in a new situation</button>`:nextBtn}</div>`}}
+ else{const a=k.apply||{q:'',model:''},r=c.ap&&c.ap.res;h=`<h3>Use it in a new situation</h3><p class="muted">This is not in your text. Think it through with what you just learned.</p><p><b>${inline(a.q)}</b></p><textarea id="applyIn" placeholder="Write your reasoning…" ${r?'readonly':''}>${esc((c.ap&&c.ap.text)||'')}</textarea>`
+  +(r?`<div class="exbox">${r.right?`<b>You got:</b> ${inline(r.right)}<br>`:''}${r.gap?`<b>Missing:</b> ${inline(r.gap)}<br>`:''}${r.hint?`<b>Hint:</b> ${inline(r.hint)}`:''}</div><div class="exbox"><b>Model answer</b><br>${inline(a.model||'')}</div><div class="acts">${nextBtn}</div>`
+   :`<div class="acts"><button class="btn primary" data-act="lapply" ${c.ap&&c.ap.busy?'disabled':''}>${c.ap&&c.ap.busy?'Checking…':'Check my thinking'}</button><button class="btn" data-act="lnext">Skip</button></div>`)}
+ return top+`<div class="lcard">${h}</div>`}
+async function gradeApply(d){const ls=d.lesson,c=ls.ch[ls.idx],k=c.card,ch=lessonChunks(d)[ls.idx],txt=((c.ap&&c.ap.text)||'').trim();if(txt.length<8)return toast('Write a little more first.');
+ c.ap={text:txt,busy:true};viewLearn();
+ try{const j=await askJSON(`Grade a learner's answer. Use only the PASSAGE. Judge understanding, not wording. ${BASE}\nPASSAGE:\n"""\n${ch.text.slice(0,2600)}\n"""\nQUESTION: ${k.apply.q}\nMODEL ANSWER: ${k.apply.model||''}\nLEARNER'S ANSWER: ${txt}\nReply with JSON only: {"score":0,"right":"what they got right, short, or empty","gap":"what is missing or wrong, short, or empty","hint":"one hint toward the gap that does not give the full answer, or empty if nothing is missing"} where score is 0, 0.5 or 1.`,j=>j&&j.score!==undefined);
+  const s=Math.max(0,Math.min(1,+j.score||0));c.ap={text:txt,res:{score:s,right:j.right||'',gap:j.gap||'',hint:j.hint||''}};logEv(d,ch.h,'apply',s>=.75?1:s>=.35?.5:0)}
+ catch(e){c.ap={text:txt};toast(errMsg(e))}
+ saveDoc(d);if(S.view==='learn')viewLearn()}
+function startReview(d){const ls=d.lesson,cs=lessonChunks(d),pool=[];
+ ls.ch.forEach((c,ci)=>{if(!c.card||!cs[ci])return;const st=sState(d.ev&&d.ev[cs[ci].h]).st,w=st==='shaky'||c.rate==='no'?3:c.rate==='part'?2:1;for(const q of c.card.check)pool.push({q:q.q,options:q.options,answer:cidx(q),why:q.why,w,h:cs[ci].h})});
+ const items=[];while(items.length<6&&pool.length){const tot=pool.reduce((s,p)=>s+p.w,0);let r=Math.random()*tot,k=0;for(;k<pool.length-1;k++){r-=pool[k].w;if(r<=0)break}items.push(pool.splice(k,1)[0])}
+ if(!items.length){ls.phase='done';return}ls.phase='review';ls.rev={items,i:0,ans:[]}}
+function doneHtml(d,ls){const ss=secs(d);return`<div class="lcard"><h3>Lesson complete</h3><p>Where you stand now, based on how you answered:</p>${partRows(ss)}<div class="acts"><button class="btn primary" data-act="ltab" data-v="review">See progress</button><button class="btn" data-act="ltab" data-v="recall">Recall without looking</button><button class="btn" data-act="lstart">Restart lesson</button></div></div>`}
+/* ---------- recall (feeds the same evidence) ---------- */
+const recallPrompt2=(d,t)=>`A learner closed their study material and wrote down everything they remember. Compare it with the material.
+Rules: use only the material. Do not add facts. Judge meaning, not exact wording.
+MATERIAL:
+"""
+${(d.text||'').slice(0,60000)}
+"""
+LEARNER'S RECALL:
+"""
+${t.slice(0,8000)}
+"""
+Reply with JSON only: {"covered":[{"point":"important point remembered correctly (short)","from":"exact 8-12 word quote from the material"}],"missed":[{"point":"important point left out (short)","from":"exact 8-12 word quote from the material"}],"wrong":[{"said":"what the learner wrote","correct":"what the material says","from":"exact 8-12 word quote"}]}
+At most 12 covered, 12 missed and 6 wrong, only the important points.`;
+function recallResult(d,r){const c=r.covered.length,m=r.missed.length,tot=Math.max(1,c+m),pt=x=>inline(String(x&&x.point||x||''));
+ return`<div class="lcard res"><h3>You remembered ${c} of ${c+m} main points</h3><div class="cov"><i style="width:${Math.round(c/tot*100)}%"></i></div>
+ ${c?`<div><b>Remembered</b><ul>${r.covered.map(x=>`<li>${pt(x)}</li>`).join('')}</ul></div>`:''}
+ ${m?`<div><b>Left out</b><ul>${r.missed.map(x=>`<li>${pt(x)}${x.from?`<div class="src">From your file: “${esc(String(x.from))}”</div>`:''}</li>`).join('')}</ul></div>`:''}
+ ${r.wrong.length?`<div><b>Check these</b><ul>${r.wrong.map(x=>`<li>You wrote: ${inline(String(x.said||''))}<br>Your file says: ${inline(String(x.correct||''))}</li>`).join('')}</ul></div>`:''}
+ <p class="muted" style="font-size:13px">This also updates your progress for each part it touched.</p>
+ <div class="acts"><button class="btn primary" data-act="rclear">Try again from memory</button><button class="btn" data-act="ltab" data-v="review">See progress</button><button class="btn" data-act="gotoreader">Open the file</button></div></div>`}
+async function checkRecall(d){const t=(L.rtext[d.id]||'').trim();if(t.length<15)return toast('Write a little more first.');
+ L.rbusy=true;viewLearn();
+ try{const j=await askJSON(recallPrompt2(d,t),j=>j&&Array.isArray(j.covered)&&Array.isArray(j.missed));
+  const res={id:d.id,covered:arr(j.covered),missed:arr(j.missed),wrong:arr(j.wrong)};L.recall=res;d.recall={ts:Date.now(),c:res.covered.length,m:res.missed.length};
+  applyCoverage(d,res.covered,[...res.missed,...res.wrong]);await saveDoc(d)}
+ catch(e){toast(errMsg(e))}
+ L.rbusy=false;if(S.view==='learn'&&S.docId===d.id)viewLearn()}
+/* ---------- progress: what is solid, what is shaky, what next ---------- */
+function reviewHtml(d){const ss=secs(d),att=attention(d).slice(0,3),cal=calibration(d),tested=ss.filter(s=>s.st!=='none').length,solid=ss.filter(s=>s.st==='solid').length;
+ let h=`<div class="lcard"><h3>Your progress</h3><div class="ubar big">${ss.map(s=>`<i class="u-${s.st}" title="Part ${s.i+1}: ${STL[s.st]}"></i>`).join('')}</div>
+ <p>${tested?`<b>${solid} of ${ss.length}</b> parts solid · ${tested} tested`:'Nothing tested yet. Start a lesson, or test yourself on any part.'}</p>
+ <p class="muted" style="font-size:13px">This is based on how you answered, explained and recalled, not on what you opened or marked done. Recent answers count more.</p></div>`;
+ if(att.length)h+=`<div class="lcard"><h3>Deserves attention next</h3>${att.map(a=>`<div class="arow"><div><b>Part ${a.i+1}: ${esc(a.title)}</b><div class="muted" style="font-size:13px">${esc(a.why)}</div></div><div class="acts"><button class="btn sm primary" data-act="testpart" data-i="${a.i}">Test myself</button><button class="btn sm" data-act="readpart" data-i="${a.i}">Read it</button></div></div>`).join('')}</div>`;
+ const bits=[];if(cal.s.n>=3)bits.push(`When you felt <b>sure</b>, you were right ${cal.s.ok} of ${cal.s.n} times.`);if(cal.g.n>=3)bits.push(`When you <b>guessed</b>, you were right ${cal.g.ok} of ${cal.g.n} times.`);
+ if(bits.length)h+=`<div class="lcard"><h3>How well you know what you know</h3><p>${bits.join(' ')}</p><p class="muted" style="font-size:13px">${cal.s.n>=3&&cal.s.ok/cal.s.n<.6?'Feeling sure has not been a reliable sign yet, so check yourself before trusting it.':'Compare how sure you felt with how you did. That gap is what to keep an eye on.'}</p></div>`;
+ return h+`<div class="lcard"><h3>All parts</h3>${partRows(ss)}</div>`}
+/* ---------- mind map: tidy, draw.io-style ---------- */
+function dims(n){const lines=wrapText(n.text,n.shape==='ellipse'?18:22),len=Math.max(4,...lines.map(l=>l.length));return{lines,w:Math.max(96,Math.round((len*8+36)/GRID)*GRID),h:Math.max(48,Math.round((lines.length*20+24)/GRID)*GRID)}}
+function snapNode(n){const d=dims(n);n.x=Math.round((n.x-d.w/2)/GRID)*GRID+d.w/2;n.y=Math.round((n.y-d.h/2)/GRID)*GRID+d.h/2}
+function addNode(x,y,text='',shape='rect',c=1){const n={id:uid(),x,y,text,shape,c};snapNode(n);M.map.nodes.push(n);return n}
+function rpath(pts,r=10){let d=`M${pts[0][0]} ${pts[0][1]}`;for(let i=1;i<pts.length-1;i++){const p=pts[i-1],c=pts[i],n=pts[i+1],l1=Math.hypot(c[0]-p[0],c[1]-p[1])||1,l2=Math.hypot(n[0]-c[0],n[1]-c[1])||1,rr=Math.min(r,l1/2,l2/2);
+  d+=`L${c[0]-(c[0]-p[0])/l1*rr} ${c[1]-(c[1]-p[1])/l1*rr}Q${c[0]} ${c[1]} ${c[0]+(n[0]-c[0])/l2*rr} ${c[1]+(n[1]-c[1])/l2*rr}`}
+ const e=pts[pts.length-1];return d+`L${e[0]} ${e[1]}`}
+function edgePts(a,b){const da=dims(a),db=dims(b),ex=n=>n.shape==='ellipse'?1.12:1,ha=da.w/2*ex(a),hb=db.w/2*ex(b),dx=b.x-a.x,dy=b.y-a.y;
+ if(Math.abs(dx)>=ha+hb+24){const s=dx>0?1:-1,sx=a.x+s*ha,tx=b.x-s*hb,mx=Math.round((sx+tx)/2);return Math.abs(dy)<1?[[sx,a.y],[tx,b.y]]:[[sx,a.y],[mx,a.y],[mx,b.y],[tx,b.y]]}
+ const va=da.h/2*ex(a),vb=db.h/2*ex(b),s=dy>=0?1:-1,sy=a.y+s*va,ty=b.y-s*vb,my=Math.round((sy+ty)/2);return Math.abs(dx)<1?[[a.x,sy],[b.x,ty]]:[[a.x,sy],[a.x,my],[b.x,my],[b.x,ty]]}
+function tidyMap(m){const by=Object.fromEntries(m.nodes.map(n=>[n.id,n])),kids={},inc=new Set();m.nodes.forEach(n=>kids[n.id]=[]);
+ for(const e of m.edges)if(by[e.a]&&by[e.b]&&e.a!==e.b&&!inc.has(e.b)){kids[e.a].push(e.b);inc.add(e.b)}
+ for(const k in kids)kids[k].sort((x,y)=>by[x].y-by[y].y);
+ const GX=64,GY=24,seen=new Set(),kk={},H={},D={},roots=[];
+ const measure=(id,dep)=>{seen.add(id);D[id]=dep;kk[id]=[];for(const k of kids[id])if(!seen.has(k)){kk[id].push(k);measure(k,dep+1)}
+  const hh=dims(by[id]).h,sum=kk[id].reduce((s,k)=>s+H[k],0)+GY*Math.max(0,kk[id].length-1);H[id]=Math.max(hh,sum)};
+ const starts=m.nodes.filter(n=>!inc.has(n.id)).sort((a,b)=>a.y-b.y);
+ for(const n of starts)if(!seen.has(n.id)){roots.push(n.id);measure(n.id,0)}
+ for(const n of[...m.nodes].sort((a,b)=>a.y-b.y))if(!seen.has(n.id)){roots.push(n.id);measure(n.id,0)}
+ const colW=[];m.nodes.forEach(n=>{const d=D[n.id];colW[d]=Math.max(colW[d]||0,dims(n).w)});const colX=[];let x=0;colW.forEach((w,i)=>{colX[i]=x;x+=w+GX});
+ let top=0;const place=(id,t)=>{const n=by[id],d=dims(n),ks=kk[id];n.x=colX[D[id]]+d.w/2;
+  if(!ks.length){n.y=t+H[id]/2;return}const tot=ks.reduce((s,k)=>s+H[k],0)+GY*(ks.length-1);let y=t+(H[id]-tot)/2;for(const k of ks){place(k,y);y+=H[k]+GY}
+  n.y=(by[ks[0]].y+by[ks[ks.length-1]].y)/2};
+ for(const r of roots){place(r,top);top+=H[r]+GY*2}
+ m.nodes.forEach(snapNode)}
+function layoutTree(data){const nodes=[{id:'root',text:String(data.root||data.title||'Topic')}],kids={root:[]},seen=new Set(['root']);
+ for(const n of(data.nodes||[])){const id=String(n.id);if(seen.has(id))continue;seen.add(id);nodes.push({id,text:String(n.text||'')});kids[id]=[]}
+ const par={};for(const n of(data.nodes||[]))par[String(n.id)]=String(n.parent??'root');
+ const reach=new Set(['root']),tree={};for(const k in kids)tree[k]=[];
+ let prog=true;const rem=nodes.slice(1);while(prog){prog=false;for(const n of rem){if(reach.has(n.id))continue;const p=par[n.id];if(reach.has(p)&&p!==n.id){tree[p].push(n.id);reach.add(n.id);prog=true}}}
+ for(const n of rem)if(!reach.has(n.id)){tree.root.push(n.id);reach.add(n.id)}
+ const col={};tree.root.forEach((c,i)=>{const go=(id)=>{col[id]=1+i%5;tree[id].forEach(go)};go(c)});
+ const tm={nodes:nodes.map((n,i)=>({id:n.id,text:n.text,x:0,y:i,shape:'rect',c:n.id==='root'?5:col[n.id]||1,root:n.id==='root'})),edges:[]};
+ for(const k in tree)for(const c of tree[k])tm.edges.push({id:k+'>'+c,a:k,b:c});
+ tidyMap(tm);return{nodes:tm.nodes,edges:tm.edges.map(e=>[e.a,e.b])}}
+function mapFromAI(data,intoCurrent){const L2=layoutTree(data),ids={};let ox=0,oy=0,m;
+ if(intoCurrent&&M.map){m=M.map;snap();if(m.nodes.length){let mn=1e9,mx=-1e9;for(const n of m.nodes){mn=Math.min(mn,n.x-dims(n).w/2);mx=Math.max(mx,n.y+dims(n).h/2)}ox=mn;oy=mx+96}}
+ else{m=newMapObj(String(data.title||data.root||'Mind map').slice(0,60));if(S.docId)m.docId=S.docId}
+ for(const n of L2.nodes){const id=uid();ids[n.id]=id;const nn={id,x:n.x+ox,y:n.y+oy,text:n.text,shape:'rect',c:n.c,root:n.root};m.nodes.push(nn);snapNode(nn)}
+ for(const[a,b]of L2.edges)m.edges.push({id:uid(),a:ids[a],b:ids[b]});
+ if(!intoCurrent){S.maps.push(m);S.mapId=m.id;M.map=m;M.hist=[];M.fut=[];M.sel=null}M.view=null;store.put('maps',m);setView('map')}
+function drawMap(){const m=M.map,w=$('#world');if(!w)return;const v=M.view;if(!v)return;w.setAttribute('transform',`translate(${v.x} ${v.y}) scale(${v.k})`);
+ const pat=$('#gp');if(pat)pat.setAttribute('patternTransform',`translate(${v.x} ${v.y}) scale(${v.k})`);
+ const byId=Object.fromEntries(m.nodes.map(n=>[n.id,n]));let h='';
+ for(const s of m.strokes)h+=`<path data-k="stroke" data-id="${s.id}" d="${s.pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('')}" fill="none" stroke="${PENC[s.c]||PENC.ink}" stroke-width="${s.w}" stroke-linecap="round" stroke-linejoin="round" opacity="${M.sel&&M.sel.id===s.id?.6:1}"/>`;
+ for(const e of m.edges){const a=byId[e.a],b=byId[e.b];if(!a||!b)continue;const on=M.sel&&M.sel.id===e.id,d=rpath(edgePts(a,b));
+  h+=`<path d="${d}" fill="none" stroke="${on?'var(--accent)':'var(--nstroke)'}" stroke-width="${on?3.5:2}" stroke-linecap="round" stroke-linejoin="round"/><path data-k="edge" data-id="${e.id}" d="${d}" fill="none" stroke="transparent" stroke-width="18"/>`}
+ for(const n of m.nodes){const d=dims(n),hid=M.rec&&!n.root&&!(M.shown&&M.shown.has(n.id)),lines=hid?['?']:d.lines,cls=['node',n.root?'root':'',M.sel&&M.sel.id===n.id?'sel':'',M.pending===n.id?'pend':''].join(' ');
+  const sel=M.sel&&M.sel.id===n.id,shape=n.shape==='text'?`<rect class="sh" x="${-d.w/2}" y="${-d.h/2}" width="${d.w}" height="${d.h}" fill="transparent" style="${sel?'':'stroke:none'}" rx="8"/>`
+   :n.shape==='ellipse'?`<ellipse class="sh" rx="${d.w/2*1.12}" ry="${d.h/2*1.12}" style="fill:var(${n.root?'--accent':'--c'+(n.c||1)})"/>`
+   :`<rect class="sh" x="${-d.w/2}" y="${-d.h/2}" width="${d.w}" height="${d.h}" rx="8" style="fill:var(${n.root?'--accent':'--c'+(n.c||1)})"/>`;
+  h+=`<g class="${cls}" data-k="node" data-id="${n.id}" transform="translate(${n.x} ${n.y})">${shape}<text text-anchor="middle" dominant-baseline="central">${lines.map((l,i)=>`<tspan x="0" y="${(i-(lines.length-1)/2)*20}">${esc(l)}</tspan>`).join('')}</text></g>`}
+ if(M.tmpLine)h+=`<line x1="${M.tmpLine[0]}" y1="${M.tmpLine[1]}" x2="${M.tmpLine[2]}" y2="${M.tmpLine[3]}" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5"/>`;
+ w.innerHTML=h}
+function addRelative(id,sib){const m=M.map,n=m.nodes.find(x=>x.id===id);if(!n)return;let par=n;
+ if(sib){const e=m.edges.find(x=>x.b===id);par=e?m.nodes.find(x=>x.id===e.a):null;if(!par){toast('Select a bubble that has a parent first.');return}}
+ snap();const dp=dims(par),kids=m.edges.filter(e=>e.a===par.id).map(e=>m.nodes.find(x=>x.id===e.b)).filter(Boolean);
+ const y=kids.length?Math.max(...kids.map(k=>k.y))+64:par.y,x=par.x+dp.w/2+160,c=addNode(x,y,'','rect',par.root?(1+kids.length%5):par.c||1);
+ m.edges.push({id:uid(),a:par.id,b:c.id});M.sel={type:'node',id:c.id};afterMap();startEdit(c.id,true)}
+/* ---------- import: drop anywhere, clear summary ---------- */
+function bindDrop(){
+ document.addEventListener('dragover',e=>{if(e.dataTransfer&&[...(e.dataTransfer.types||[])].includes('Files')){e.preventDefault();const z=$('#drop');if(z)z.classList.add('over')}});
+ document.addEventListener('dragleave',e=>{if(!e.relatedTarget){const z=$('#drop');if(z)z.classList.remove('over')}});
+ document.addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files.length){e.preventDefault();const z=$('#drop');if(z)z.classList.remove('over');const fs=[...e.dataTransfer.files];S.view==='scan'?addPhotos(fs):importFiles(fs)}})}
+async function importFiles(files){let ok=0,last=null;const empty=[];
+ for(const f of files){try{await importOne(f);ok++;last=curDoc();if(last&&last.kind!=='file'&&!(last.text||'').trim())empty.push(last.name)}catch(e){toast('Could not read '+f.name)}}
+ if(ok===1&&last){editing=false;setView('reader')}else render();
+ if(ok){const m='Added '+ok+(ok>1?' files.':' file.');toast(empty.length?m+' '+empty[0]+' has no readable text yet. Use Convert to document in the Reader.':m)}}
+async function rotPage(i){const p=SC.pages[i];if(!p)return;const bm=await createImageBitmap(p.blob),c=document.createElement('canvas');c.width=bm.height;c.height=bm.width;const x=c.getContext('2d');x.translate(c.width,0);x.rotate(Math.PI/2);x.drawImage(bm,0,0);
+ const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.9));p.blob=b;URL.revokeObjectURL(p.url);p.url=URL.createObjectURL(b);p.status='';p.blocks=null;viewScan()}
+/* ---------- actions ---------- */
+async function extraAct2(a,b,v,id){const d=curDoc(),ls=d&&d.lesson,c=ls&&ls.ch&&ls.ch[ls.idx],sv=()=>d&&saveDoc(d),I=+b.dataset.i;
+ switch(a){
+ case'testdoc':useDoc(id);testPart(I);return;
+ case'testpart':testPart(I);return;
+ case'readpart':setView('reader');setTimeout(()=>{const el=$(`.cbar[data-ci="${I}"]`);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})},150);return;
+ case'cover':d.cover=!d.cover;sv();rerenderReader();return;
+ case'unitopen':b.classList.toggle('open');return;
+ case'lgo':{const k=c.card;c.step=Math.min(k&&k.apply?4:3,c.step+1);sv();viewLearn();if(c.step===3&&ls.idx+1<ls.ch.length)ensureCard(d,ls.idx+1);return}
+ case'lconf':{c.conf=c.conf||[];c.conf[+b.dataset.q]=v;sv();viewLearn();return}
+ case'lchk':{const q=+b.dataset.q,o=+b.dataset.o;c.ans[q]=o;logEv(d,lessonChunks(d)[ls.idx].h,'check',o===cidx(c.card.check[q])?1:0,(c.conf&&c.conf[q])||'');viewLearn();return}
+ case'lrate':c.rate=v;logEv(d,lessonChunks(d)[ls.idx].h,'explain',v==='got'?1:v==='part'?.5:0);viewLearn();return;
+ case'lrev':{const r=ls.rev,q=r.items[r.i];r.ans[r.i]=+b.dataset.o;if(q.h)logEv(d,q.h,'rev',r.ans[r.i]===q.answer?1:0);sv();viewLearn();return}
+ case'lapply':gradeApply(d);return;
+ case'pgrot':rotPage(I);return;
+ case'mtidy':if(M.map&&M.map.nodes.length){snap();tidyMap(M.map);afterMap();fitMap();toast('Tidied.')}return;
+ case'mrec':M.rec=!M.rec;M.shown=new Set();M.sel=null;{const bb=$('#recB');if(bb){bb.classList.toggle('primary',M.rec);bb.lastElementChild.textContent=M.rec?'Show labels':'Recall'}}drawMap();toast(M.rec?'Labels hidden. Tap a bubble after you try to recall it.':'Labels shown.');return;
+ case'nchild':addRelative(M.sel.id,false);return;
+ case'nsib':addRelative(M.sel.id,true);return;
+ default:return extraAct(a,b,v,id)}}
+document.addEventListener('input',e=>{const d=curDoc();if(!d||e.target.id!=='applyIn'||!d.lesson)return;const c=d.lesson.ch[d.lesson.idx];if(c){c.ap=c.ap||{};c.ap.text=e.target.value}});
+
+/* LPA (c) 2026. All rights reserved. */
+/* ---------- LPA ---------- */
+try{Object.defineProperty(window,'__LPA__',{value:'LPA',enumerable:false});document.documentElement.setAttribute('data-by','LPA')}catch{}
+/* ---------- first run ---------- */
+function seed(){const text=`How plants make food\n\nPlants make their own food through photosynthesis. Chlorophyll, the green pigment inside chloroplasts, absorbs sunlight.\n\nThe plant takes in carbon dioxide from the air through tiny pores called stomata, and water from the soil through its roots.\n\nUsing light energy, the plant turns carbon dioxide and water into glucose, a sugar it uses for energy and growth. Oxygen is released as a by-product.\n\nThe light-dependent reactions happen in the thylakoid membranes. The Calvin cycle, which builds glucose, happens in the stroma.`;
+ const d={id:uid(),title:'Example: How plants make food',kind:'text',created:Date.now(),example:true,text,html:'<h1>How plants make food</h1>'+textToHtml(text.split('\n\n').slice(1).join('\n\n'))};
+ const m=newMapObj('Example: Photosynthesis');m.example=true;const L=layoutTree({root:'Photosynthesis',nodes:[{id:'1',text:'Inputs',parent:'root'},{id:'2',text:'Carbon dioxide',parent:'1'},{id:'3',text:'Water',parent:'1'},{id:'4',text:'Sunlight',parent:'1'},{id:'5',text:'Outputs',parent:'root'},{id:'6',text:'Glucose',parent:'5'},{id:'7',text:'Oxygen',parent:'5'},{id:'8',text:'Where',parent:'root'},{id:'9',text:'Chloroplasts',parent:'8'}]}),ids={};
+ for(const n of L.nodes){ids[n.id]=uid();m.nodes.push({id:ids[n.id],x:n.x,y:n.y,text:n.text,shape:'ellipse',c:n.c,root:n.root})}for(const[a,b]of L.edges)m.edges.push({id:uid(),a:ids[a],b:ids[b]});
+ S.docs.push(d);S.maps.push(m);saveDoc(d);store.put('maps',m)}
+(async()=>{loadSettings();loadUI();S.docs=await store.all('docs');S.maps=await store.all('maps');
+ let seeded=false;try{seeded=!!localStorage.getItem('sd-seeded')}catch{}
+ if(!seeded&&!S.docs.length&&!S.maps.length){seed();try{localStorage.setItem('sd-seeded','1')}catch{}}
+ bindDrop();setView('library')})();
+})();
+</script>
+
+</body></html>
+</body></html>
